@@ -1,6 +1,8 @@
 
 # Indstillinger:
 
+
+
 - Enable/disable
 - Api Key + Secret ( evt. knap )
 - sessiontime
