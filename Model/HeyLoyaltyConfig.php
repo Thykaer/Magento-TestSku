@@ -14,6 +14,7 @@ class HeyLoyaltyConfig implements HeyLoyaltyConfigInterface
     public const CONFIG_LIST = 'heyloyalty/general/list';
     public const CONFIG_TRACKING_ACTIVATE = 'heyloyalty/general/tracking_activate';
     public const CONFIG_MAPPER = 'heyloyalty/general/mapper';
+    public const CONFIG_TRACKING_ID = 'heyloyalty/general/tracking_id';
 
     /**
      * @param ScopeConfigInterface $scopeConfig
@@ -65,14 +66,14 @@ class HeyLoyaltyConfig implements HeyLoyaltyConfigInterface
     /**
      * Get if tracking is activated
      *
-     * @return string
+     * @return bool
      */
-    public function getTrackingActivated(): string
+    public function getIsTrackingActivated(): bool
     {
         return $this->scopeConfig->getValue(
             self::CONFIG_TRACKING_ACTIVATE,
             ScopeInterface::SCOPE_STORE
-        ) ?? '';
+        ) === '1';
     }
 
     /**
@@ -97,6 +98,19 @@ class HeyLoyaltyConfig implements HeyLoyaltyConfigInterface
     {
         return $this->scopeConfig->getValue(
             self::CONFIG_MAPPER,
+            ScopeInterface::SCOPE_STORE
+        ) ?? '';
+    }
+
+    /**
+     * Get HeyLoyalty tracking id
+     *
+     * @return string
+     */
+    public function getTrackingId(): string
+    {
+        return $this->scopeConfig->getValue(
+            self::CONFIG_TRACKING_ID,
             ScopeInterface::SCOPE_STORE
         ) ?? '';
     }
