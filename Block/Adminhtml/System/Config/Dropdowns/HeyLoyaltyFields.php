@@ -6,7 +6,12 @@ use Wexo\HeyLoyalty\Block\Adminhtml\System\Config\AbstractSelect;
 
 class HeyLoyaltyFields extends AbstractSelect
 {
-    public function getSourceOptions()
+    /**
+     * Override to get HeyLoyalty to map Magento 2 fields to
+     *
+     * @return array[]
+     */
+    public function getSourceOptions(): array
     {
         return [
             [

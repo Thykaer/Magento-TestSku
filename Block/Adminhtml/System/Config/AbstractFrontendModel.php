@@ -6,26 +6,40 @@ use Magento\Backend\Block\Template\Context;
 use Magento\Config\Block\System\Config\Form\Field\FieldArray\AbstractFieldArray;
 use Magento\Framework\Data\Form\Element\AbstractElement;
 use Magento\Framework\DataObject;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Registry;
+use Magento\Framework\View\Element\BlockInterface;
 use Magento\Framework\View\Element\Html\Select;
 use Wexo\Webshipper\Block\Adminhtml\System\Config\Dropdowns\WebshipperAddressFields;
 use Wexo\Webshipper\Block\Adminhtml\System\Config\Dropdowns\MagentoFields;
 
 class AbstractFrontendModel extends AbstractFieldArray
 {
-    public $selectOptions;
-    public $heyLoyaltyFields = false;
-    public $magentoFields = false;
+    /** @var bool|BlockInterface */
+    public BlockInterface|bool $selectOptions;
+    /** @var bool|BlockInterface */
+    public BlockInterface|bool $heyLoyaltyFields = false;
+    /** @var bool|BlockInterface */
+    public BlockInterface|bool $magentoFields = false;
 
+    /**
+     * @param Context $context
+     * @param Registry $coreRegistry
+     * @param array $data
+     */
     public function __construct(
         Context $context,
-        Registry $coreRegistry,
+        public Registry $coreRegistry,
         array $data = []
     ) {
-        $this->_coreRegistry = $coreRegistry;
         parent::__construct($context, $data);
     }
 
+    /**
+     * Add columns and button
+     *
+     * @return void
+     */
     protected function _prepareToRender()
     {
         $this->addColumn(
@@ -50,7 +64,13 @@ class AbstractFrontendModel extends AbstractFieldArray
         $this->_addButtonLabel = __('Add More');
     }
 
-    public function getHeyLoyaltyFields()
+    /**
+     * Get HeyLoyalty mapping fields
+     *
+     * @return mixed
+     * @throws LocalizedException
+     */
+    public function getHeyLoyaltyFields(): mixed
     {
         if (!$this->heyLoyaltyFields) {
             $this->heyLoyaltyFields = $this->getLayout()->createBlock(
@@ -60,7 +80,14 @@ class AbstractFrontendModel extends AbstractFieldArray
         }
         return $this->heyLoyaltyFields;
     }
-    public function getMagentoFields()
+
+    /**
+     * Get Magento 2 mapping fields
+     *
+     * @return mixed
+     * @throws LocalizedException
+     */
+    public function getMagentoFields(): mixed
     {
         if (!$this->magentoFields) {
             $this->magentoFields = $this->getLayout()->createBlock(
@@ -71,6 +98,13 @@ class AbstractFrontendModel extends AbstractFieldArray
         return $this->magentoFields;
     }
 
+    /**
+     * Prepare array row
+     *
+     * @param DataObject $row
+     * @return void
+     * @throws LocalizedException
+     */
     protected function _prepareArrayRow(DataObject $row): void
     {
         $options = [];
@@ -81,7 +115,13 @@ class AbstractFrontendModel extends AbstractFieldArray
         $row->setData('option_extra_attrs', $options);
     }
 
-    private function getSelectFieldOptions()
+    /**
+     * Get select field options
+     *
+     * @return mixed
+     * @throws LocalizedException
+     */
+    private function getSelectFieldOptions(): mixed
     {
         if (!$this->selectOptions) {
             $this->selectOptions = $this->getLayout()->createBlock(
@@ -93,6 +133,12 @@ class AbstractFrontendModel extends AbstractFieldArray
         return $this->selectOptions;
     }
 
+    /**
+     * Get element HTML
+     *
+     * @param AbstractElement $element
+     * @return string
+     */
     protected function _getElementHtml(AbstractElement $element)
     {
         $html = parent::_getElementHtml($element);

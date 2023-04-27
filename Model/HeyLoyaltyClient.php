@@ -14,13 +14,18 @@ class HeyLoyaltyClient implements HeyLoyaltyClientInterface
 {
     public const BASE_URI = 'https://api.heyloyalty.com/loyalty/v1/';
 
+    /**
+     * @param Client $client
+     * @param HeyLoyaltyConfigInterface $config
+     * @param Json $json
+     * @param LoggerInterface $logger
+     */
     public function __construct(
         public Client                    $client,
         public HeyLoyaltyConfigInterface $config,
         public Json                      $json,
         public LoggerInterface           $logger
-    )
-    {
+    ) {
     }
 
     /**

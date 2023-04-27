@@ -6,17 +6,34 @@ use Magento\Framework\View\Element\Html\Select;
 
 abstract class AbstractSelect extends Select
 {
-    public function setInputName($value)
+    /**
+     * Set input name
+     *
+     * @param $value
+     * @return mixed
+     */
+    public function setInputName($value): mixed
     {
         return $this->setName($value);
     }
 
-    public function setInputId($value)
+    /**
+     * Set input id
+     *
+     * @param $value
+     * @return AbstractSelect
+     */
+    public function setInputId($value): AbstractSelect
     {
         return $this->setId($value);
     }
 
-    public function _toHtml()
+    /**
+     * Convert to HTML
+     *
+     * @return string
+     */
+    public function _toHtml(): string
     {
         if (!$this->getOptions()) {
             $this->setOptions($this->getSourceOptions());
@@ -24,12 +41,22 @@ abstract class AbstractSelect extends Select
         return parent::_toHtml();
     }
 
-    public function getSourceOptions()
+    /**
+     * Get source options
+     *
+     * @return array
+     */
+    public function getSourceOptions(): array
     {
         return [];
     }
 
-    public function getExtraParams()
+    /**
+     * Get extra parameters
+     *
+     * @return string
+     */
+    public function getExtraParams(): string
     {
         return 'style="width:200px"';
     }

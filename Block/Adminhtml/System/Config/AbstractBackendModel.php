@@ -13,8 +13,19 @@ use Magento\Framework\Serialize\SerializerInterface;
 
 abstract class AbstractBackendModel extends ConfigValue
 {
-    protected $serializer;
+    /** @var SerializerInterface $serializer */
+    protected SerializerInterface $serializer;
 
+    /**
+     * @param SerializerInterface $serializer
+     * @param Context $context
+     * @param Registry $registry
+     * @param ScopeConfigInterface $config
+     * @param TypeListInterface $cacheTypeList
+     * @param AbstractResource|null $resource
+     * @param AbstractDb|null $resourceCollection
+     * @param array $data
+     */
     public function __construct(
         SerializerInterface $serializer,
         Context $context,
@@ -29,7 +40,12 @@ abstract class AbstractBackendModel extends ConfigValue
         parent::__construct($context, $registry, $config, $cacheTypeList, $resource, $resourceCollection, $data);
     }
 
-    public function beforeSave()
+    /**
+     * Unset __empty and serialize value before saving
+     *
+     * @return void
+     */
+    public function beforeSave(): void
     {
         $value = $this->getValue();
         if (isset($value['__empty'])) {
@@ -39,7 +55,12 @@ abstract class AbstractBackendModel extends ConfigValue
         $this->setValue($encodedValue);
     }
 
-    protected function _afterLoad()
+    /**
+     * Unserialize value before loading
+     *
+     * @return void
+     */
+    protected function _afterLoad(): void
     {
         $value = $this->getValue();
         if ($value) {
