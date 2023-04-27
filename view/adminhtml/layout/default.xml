@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="admin-1column"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceContainer name="before.body.end">
+            <block class="Wexo\HeyLoyalty\Block\Tracking"
+                   name="wexo.heyloyalty.tracking.script"
+                   template="Wexo_HeyLoyalty::tracking_script.phtml">
+                <arguments>
+                    <argument name="view_model" xsi:type="object">Wexo\HeyLoyalty\ViewModel\Tracking</argument>
+                </arguments>
+            </block>
+        </referenceContainer>
+    </body>
+</page>
