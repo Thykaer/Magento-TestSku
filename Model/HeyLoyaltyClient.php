@@ -148,10 +148,10 @@ class HeyLoyaltyClient implements HeyLoyaltyClientInterface
      * Fetch a single member from a single list from HeyLoyalty API
      *
      * @param int $listId
-     * @param int $memberId
+     * @param string $memberId
      * @return array
      */
-    public function fetchListMember(int $listId, int $memberId): array
+    public function fetchListMember(int $listId, string $memberId): array
     {
         return $this->request("lists/{$listId}/members/{$memberId}");
     }
@@ -173,11 +173,11 @@ class HeyLoyaltyClient implements HeyLoyaltyClientInterface
      * Overrides all field values not in the params; field values not in params will be deleted
      *
      * @param int $listId
-     * @param int $memberId
+     * @param string $memberId
      * @param array $params
      * @return array
      */
-    public function editListMember(int $listId, int $memberId, array $params): array
+    public function editListMember(int $listId, string $memberId, array $params): array
     {
         return $this->request("lists/{$listId}/members/{$memberId}", 'PUT', $params);
     }
@@ -187,11 +187,11 @@ class HeyLoyaltyClient implements HeyLoyaltyClientInterface
      * Updates only field values sent in params without affecting the others
      *
      * @param int $listId
-     * @param int $memberId
+     * @param string $memberId
      * @param array $params
      * @return array
      */
-    public function patchListMember(int $listId, int $memberId, array $params): array
+    public function patchListMember(int $listId, string $memberId, array $params): array
     {
         return $this->request("lists/{$listId}/members/{$memberId}", 'PATCH', $params);
     }
@@ -200,66 +200,12 @@ class HeyLoyaltyClient implements HeyLoyaltyClientInterface
      * Deletes a list member
      *
      * @param int $listId
-     * @param int $memberId
+     * @param string $memberId
      * @return array
      */
-    public function deleteListMember(int $listId, int $memberId): array
+    public function deleteListMember(int $listId, string $memberId): array
     {
         return $this->request("lists/{$listId}/members/{$memberId}", 'DELETE');
-    }
-
-    /**
-     * Import list members from a file. File must be CSV format. Refer to HeyLoyalty API for different kind of fields
-     *
-     * @param int $listId
-     * @param string $fileName
-     * @param string $filePath
-     * @param array $fields
-     * @param string $dateFormat
-     * @param int $skipHeaderLine
-     * @param int $triggerAutoresponder
-     * @param int $triggerOptin
-     * @param string $handleExisting
-     * @param int $emptyField
-     * @param string $duplicateField
-     * @param string $sendErrorsTo
-     * @param string $delimiter
-     * @return array
-     */
-    public function importListMembers(
-        int $listId,
-        string $fileName,
-        string $filePath,
-        array $fields = ['email'], // Which fields the import file contains
-        string $dateFormat = 'd-m-Y', // Date format for all dates in import file
-        int $skipHeaderLine = 0, // Set to 1 if import file has header line (skip first line)
-        int $triggerAutoresponder = 0,
-        int $triggerOptin = 0,
-        string $handleExisting = 'ignore', // 'update' = create + update, 'updateOnly' = update, 'ignore' = create
-        int $emptyField = 0, // Set to 1 to delete existing data not included in import file
-        string $duplicateField = 'email', // Which file that determines if two entries is duplicates
-        string $sendErrorsTo = 'mkk@wexo.dk', // Email to send errors to
-        string $delimiter = ';' // Which character to separate columns by. Any combo of , ; | :
-    ): array {
-        $payload = [
-            'fields_selected' => $fields,
-            'date_format' => $dateFormat,
-            'skip_header_line' => $skipHeaderLine,
-            'trigger_autoresponder' => $triggerAutoresponder,
-            'trigger_optin' => $triggerOptin,
-            'handle_existing' => $handleExisting,
-            'empty_field' => $emptyField,
-            'duplicate_field' => $duplicateField,
-            'sendErrorsTo' => $sendErrorsTo,
-            'delimiter' => $delimiter
-        ];
-        $multipart = [
-            [
-                'name' => $fileName,
-                'contents' => Utils::tryFopen($filePath . $fileName, 'r')
-            ]
-        ];
-        return $this->request("lists/{$listId}/import", 'POST', $payload, $multipart);
     }
 
     /**
@@ -285,11 +231,13 @@ class HeyLoyaltyClient implements HeyLoyaltyClientInterface
         $payload = [
             'listId' => $targetListId,
             'handleDuplicates[field]' => $duplicatesField,
-            'handleDuplicates[action]' => $duplicatesAction
+            'handleDuplicates[action]' => $duplicatesAction,
+            'members' => $members
         ];
         $i = 0;
         foreach ($members as $member) {
-            $payload['members[' . $i . ']'] = $member;
+            //$payload['members[' . $i . ']'] = $member;
+            $i++;
         }
         return $this->request("lists/{$sourceListId}/members/bulk/{$action}", 'POST', $payload);
     }

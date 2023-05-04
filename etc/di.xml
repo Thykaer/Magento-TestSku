@@ -13,7 +13,7 @@
         for="Wexo\HeyLoyalty\Api\HeyLoyaltyConfigInterface"
         type="Wexo\HeyLoyalty\Model\HeyLoyaltyConfig"
     />
-    <type name="Magento\Framework\Console\CommandListInterface">
+    <!--<type name="Magento\Framework\Console\CommandListInterface">
         <arguments>
             <argument name="commands" xsi:type="array">
                 <item name="wexo_heyloyalty_hey_loyalty_debug" xsi:type="object">
@@ -21,5 +21,5 @@
                 </item>
             </argument>
         </arguments>
-    </type>
+    </type>-->
 </config>
