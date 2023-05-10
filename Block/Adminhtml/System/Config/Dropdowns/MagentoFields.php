@@ -15,23 +15,6 @@ class MagentoFields extends AbstractSelect
     {
         return [
             [
-                'label' => 'Billing Information',
-                'value' => [
-                    'firstname' => 'First Name',
-                    'lastname' => 'Last Name',
-                    'email' => 'Email',
-                    'mobile' => 'Mobile',
-                    'sex' => 'Sex',
-                    'birthdate' => 'Birthdate',
-                    'address' => 'Address',
-                    'postalcode' => 'Postal Code',
-                    'city' => 'City',
-                    'Country' => 'Country',
-                    'customer_id' => 'Customer ID',
-                    'customer_type' => 'Customer Type'
-                ]
-            ]
-            /*[
                 'label' => 'Store Information',
                 'value' => [
                     'store_name' => 'Name',
@@ -44,14 +27,15 @@ class MagentoFields extends AbstractSelect
                     'store_street_line2' => 'Street2',
                     'store_merchant_vat_number' => 'Vat',
                 ]
-            ],[
+            ],
+            [
                 'label' => 'Session Information',
                 'value' => [
                     'session_name' => 'Name',
                     'session_email' => 'Email',
-                    // 'session_get_data' => 'getData() from static',
                 ]
-            ],[
+            ],
+            [
                 'label' => 'Shipping Information',
                 'value' => [
                     'shipping_name' => 'Name',
@@ -66,9 +50,9 @@ class MagentoFields extends AbstractSelect
                     'shipping_street' => 'Street',
                     'shipping_company' => 'Company',
                     'shipping_fax' => 'Fax',
-                    // 'shipping_get_data' => 'getData() from static'
                 ]
-            ],[
+            ],
+            [
                 'label' => 'Billing Information',
                 'value' => [
                     'billing_name' => 'Name',
@@ -83,9 +67,8 @@ class MagentoFields extends AbstractSelect
                     'billing_street' => 'Street',
                     'billing_company' => 'Company',
                     'billing_fax' => 'Fax',
-                    // 'billing_get_data' => 'getData() from static'
                 ]
-            ]*/
+            ]
         ];
     }
 }

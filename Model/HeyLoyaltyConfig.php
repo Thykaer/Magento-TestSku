@@ -2,7 +2,9 @@
 
 namespace Wexo\HeyLoyalty\Model;
 
+use InvalidArgumentException;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\Serialize\Serializer\Json;
 use Magento\Store\Model\ScopeInterface;
 use Wexo\HeyLoyalty\Api\HeyLoyaltyConfigInterface;
 
@@ -15,12 +17,15 @@ class HeyLoyaltyConfig implements HeyLoyaltyConfigInterface
     public const CONFIG_TRACKING_ACTIVATE = 'heyloyalty/general/tracking_activate';
     public const CONFIG_MAPPER = 'heyloyalty/general/mapper';
     public const CONFIG_TRACKING_ID = 'heyloyalty/general/tracking_id';
+    public const CONFIG_SESSION_TIME = 'heyloyalty/general/session_time';
+    public const CONFIG_PURCHASE_HISTORY_ACTIVATE = 'heyloyalty/general/purchase_history_activate';
 
     /**
      * @param ScopeConfigInterface $scopeConfig
      */
     public function __construct(
-        public ScopeConfigInterface $scopeConfig
+        public ScopeConfigInterface $scopeConfig,
+        public Json $json
     ) {
     }
 
@@ -96,10 +101,14 @@ class HeyLoyaltyConfig implements HeyLoyaltyConfigInterface
      */
     public function getMapping(): string
     {
-        return $this->scopeConfig->getValue(
-            self::CONFIG_MAPPER,
-            ScopeInterface::SCOPE_STORE
-        ) ?? '';
+        try {
+            return $this->json->unserialize($this->scopeConfig->getValue(
+                self::CONFIG_MAPPER,
+                ScopeInterface::SCOPE_STORE
+            )) ?? '';
+        } catch (InvalidArgumentException $e) {
+            return '';
+        }
     }
 
     /**
@@ -113,5 +122,31 @@ class HeyLoyaltyConfig implements HeyLoyaltyConfigInterface
             self::CONFIG_TRACKING_ID,
             ScopeInterface::SCOPE_STORE
         ) ?? '';
+    }
+
+    /**
+     * Get HeyLoyalty session time
+     *
+     * @return string
+     */
+    public function getSessionTime(): string
+    {
+        return $this->scopeConfig->getValue(
+            self::CONFIG_SESSION_TIME,
+            ScopeInterface::SCOPE_STORE
+        ) ?? '';
+    }
+
+    /**
+     * Get if purchase history export is activated
+     *
+     * @return bool
+     */
+    public function getIsPurchaseHistoryActivated(): bool
+    {
+        return $this->scopeConfig->getValue(
+                self::CONFIG_PURCHASE_HISTORY_ACTIVATE,
+                ScopeInterface::SCOPE_STORE
+            ) === '1';
     }
 }

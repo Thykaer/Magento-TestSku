@@ -52,4 +52,11 @@ interface HeyLoyaltyConfigInterface
      * @return string
      */
     public function getTrackingId(): string;
+
+    /**
+     * Get HeyLoyalty session time
+     *
+     * @return string
+     */
+    public function getSessionTime(): string;
 }

@@ -2,6 +2,8 @@
 
 namespace Wexo\HeyLoyalty\Api;
 
+use Magento\Framework\Exception\NoSuchEntityException;
+
 interface HeyLoyaltyClientInterface
 {
     /**
@@ -291,18 +293,71 @@ interface HeyLoyaltyClientInterface
     ): array;
 
     /**
-     * Send a request to the HeyLoyalty API. Returns [] on all errors.
+     * Import purchase history from csv file. Refer to HeyLoyalty API for different kind of fields
+     *
+     * @param array $fields
+     * @param string $dateFormat
+     * @param bool $skipHeaderLine
+     * @param string $sendErrorsTo
+     * @param string $delimiter
+     * @return array
+     * @throws NoSuchEntityException
+     */
+    public function exportPurchaseHistory(
+        array $fields = ['email'], // Which fields the import file contains
+        string $dateFormat = 'Y-m-d H:i:s', // Date format for all dates in import file
+        bool $skipHeaderLine = true, // Set to false if import file has header line (skip first line)
+        string $sendErrorsTo = 'mkk@wexo.dk', // Email to send errors to
+        string $delimiter = ',' // Which character to separate columns by. Any combo of , ; | :
+    ): array;
+
+    /**
+     * Send a v1 request.
      *
      * @param string $endpoint
      * @param string $method
      * @param array $payload
-     * @param array $multipart
+     * @param bool $multipart
      * @return array
      */
-    public function request(
+    public function vOneRequest(
         string $endpoint,
         string $method = 'GET',
         array $payload = [],
-        array $multipart = []
+        bool $multipart = false
+    ): array;
+
+    /**
+     * Send a bi request
+     *
+     * @param string $endpoint
+     * @param string $method
+     * @param array $payload
+     * @param bool $multipart
+     * @return array
+     */
+    public function biRequest(
+        string $endpoint,
+        string $method = 'GET',
+        array $payload = [],
+        bool $multipart = false
+    ): array;
+
+    /**
+     * Send a request to the HeyLoyalty API. Returns [] on all errors.
+     *
+     * @param string $host
+     * @param string $endpoint
+     * @param string $method
+     * @param array $payload
+     * @param bool $multipart
+     * @return array
+     */
+    public function request(
+        string $host,
+        string $endpoint,
+        string $method = 'GET',
+        array $payload = [],
+        bool $multipart = false
     ): array;
 }

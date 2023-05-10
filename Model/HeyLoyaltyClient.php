@@ -4,27 +4,33 @@ namespace Wexo\HeyLoyalty\Model;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
-use GuzzleHttp\Psr7\Utils;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Serialize\Serializer\Json;
+use Magento\Store\Model\StoreManager;
 use Psr\Log\LoggerInterface;
+use Throwable;
 use Wexo\HeyLoyalty\Api\HeyLoyaltyClientInterface;
 use Wexo\HeyLoyalty\Api\HeyLoyaltyConfigInterface;
 
 class HeyLoyaltyClient implements HeyLoyaltyClientInterface
 {
     public const BASE_URI = 'https://api.heyloyalty.com/loyalty/v1/';
+    public const BI_URI = 'https://bi.heyloyalty.com/api/';
+    public const EXPORT_CSV_URL = 'wexo_heyloyalty/purchasehistory/csvexport';
 
     /**
      * @param Client $client
      * @param HeyLoyaltyConfigInterface $config
      * @param Json $json
      * @param LoggerInterface $logger
+     * @param StoreManager $storeManager
      */
     public function __construct(
-        public Client                    $client,
+        public Client $client,
         public HeyLoyaltyConfigInterface $config,
-        public Json                      $json,
-        public LoggerInterface           $logger
+        public Json $json,
+        public LoggerInterface $logger,
+        public StoreManager $storeManager
     ) {
     }
 
@@ -35,7 +41,7 @@ class HeyLoyaltyClient implements HeyLoyaltyClientInterface
      */
     public function fetchLists(): array
     {
-        return $this->request("lists");
+        return $this->vOneRequest("lists");
     }
 
     /**
@@ -46,7 +52,7 @@ class HeyLoyaltyClient implements HeyLoyaltyClientInterface
      */
     public function fetchList(int $listId): array
     {
-        return $this->request("lists/{$listId}");
+        return $this->vOneRequest("lists/{$listId}");
     }
 
     /**
@@ -70,7 +76,7 @@ class HeyLoyaltyClient implements HeyLoyaltyClientInterface
             'duplicates' => $allowDuplicates,
             'fields' => $fields
         ];
-        return $this->request("lists", 'POST', $payload);
+        return $this->vOneRequest("lists", 'POST', $payload);
     }
 
     /**
@@ -96,7 +102,7 @@ class HeyLoyaltyClient implements HeyLoyaltyClientInterface
             'duplicates' => $allowDuplicates,
             'fields' => $fields
         ];
-        return $this->request("lists/{$listId}", 'PUT', $payload);
+        return $this->vOneRequest("lists/{$listId}", 'PUT', $payload);
     }
 
     /**
@@ -107,7 +113,7 @@ class HeyLoyaltyClient implements HeyLoyaltyClientInterface
      */
     public function deleteList(int $listId): array
     {
-        return $this->request("lists/{$listId}", 'DELETE');
+        return $this->vOneRequest("lists/{$listId}", 'DELETE');
     }
 
     /**
@@ -141,7 +147,7 @@ class HeyLoyaltyClient implements HeyLoyaltyClientInterface
         if ($filter !== '') {
             $payload['filter'] = $filter;
         }
-        return $this->request("lists/{$listId}/members", 'GET', $payload);
+        return $this->vOneRequest("lists/{$listId}/members", 'GET', $payload);
     }
 
     /**
@@ -153,7 +159,7 @@ class HeyLoyaltyClient implements HeyLoyaltyClientInterface
      */
     public function fetchListMember(int $listId, string $memberId): array
     {
-        return $this->request("lists/{$listId}/members/{$memberId}");
+        return $this->vOneRequest("lists/{$listId}/members/{$memberId}");
     }
 
     /**
@@ -165,7 +171,7 @@ class HeyLoyaltyClient implements HeyLoyaltyClientInterface
      */
     public function createListMember(int $listId, array $params): array
     {
-        return $this->request("lists/{$listId}/members", 'POST', $params);
+        return $this->vOneRequest("lists/{$listId}/members", 'POST', $params);
     }
 
     /**
@@ -179,7 +185,7 @@ class HeyLoyaltyClient implements HeyLoyaltyClientInterface
      */
     public function editListMember(int $listId, string $memberId, array $params): array
     {
-        return $this->request("lists/{$listId}/members/{$memberId}", 'PUT', $params);
+        return $this->vOneRequest("lists/{$listId}/members/{$memberId}", 'PUT', $params);
     }
 
     /**
@@ -193,7 +199,7 @@ class HeyLoyaltyClient implements HeyLoyaltyClientInterface
      */
     public function patchListMember(int $listId, string $memberId, array $params): array
     {
-        return $this->request("lists/{$listId}/members/{$memberId}", 'PATCH', $params);
+        return $this->vOneRequest("lists/{$listId}/members/{$memberId}", 'PATCH', $params);
     }
 
     /**
@@ -205,7 +211,7 @@ class HeyLoyaltyClient implements HeyLoyaltyClientInterface
      */
     public function deleteListMember(int $listId, string $memberId): array
     {
-        return $this->request("lists/{$listId}/members/{$memberId}", 'DELETE');
+        return $this->vOneRequest("lists/{$listId}/members/{$memberId}", 'DELETE');
     }
 
     /**
@@ -239,7 +245,7 @@ class HeyLoyaltyClient implements HeyLoyaltyClientInterface
             //$payload['members[' . $i . ']'] = $member;
             $i++;
         }
-        return $this->request("lists/{$sourceListId}/members/bulk/{$action}", 'POST', $payload);
+        return $this->vOneRequest("lists/{$sourceListId}/members/bulk/{$action}", 'POST', $payload);
     }
 
     /**
@@ -249,7 +255,7 @@ class HeyLoyaltyClient implements HeyLoyaltyClientInterface
      */
     public function fetchProductfeeds(): array
     {
-        return $this->request('integrations/productfeed');
+        return $this->vOneRequest('integrations/productfeed');
     }
 
     /**
@@ -265,7 +271,7 @@ class HeyLoyaltyClient implements HeyLoyaltyClientInterface
             'name' => $name,
             'url' => $url
         ];
-        return $this->request('integrations/productfeed', 'POST', $payload);
+        return $this->vOneRequest('integrations/productfeed', 'POST', $payload);
     }
 
     /**
@@ -282,7 +288,7 @@ class HeyLoyaltyClient implements HeyLoyaltyClientInterface
             'name' => $name,
             'url' => $url
         ];
-        return $this->request("integrations/productfeed/{$feedId}", 'PUT', $payload);
+        return $this->vOneRequest("integrations/productfeed/{$feedId}", 'PUT', $payload);
     }
 
     /**
@@ -293,7 +299,7 @@ class HeyLoyaltyClient implements HeyLoyaltyClientInterface
      */
     public function deleteProductfeed(int $feedId): array
     {
-        return $this->request("integrations/productfeed/{$feedId}", 'DELETE');
+        return $this->vOneRequest("integrations/productfeed/{$feedId}", 'DELETE');
     }
 
     /**
@@ -304,7 +310,7 @@ class HeyLoyaltyClient implements HeyLoyaltyClientInterface
      */
     public function fetchProductfeedMapping(int $feedId): array
     {
-        return $this->request("integrations/productfeed-mapping/{$feedId}");
+        return $this->vOneRequest("integrations/productfeed-mapping/{$feedId}");
     }
 
     /**
@@ -365,7 +371,7 @@ class HeyLoyaltyClient implements HeyLoyaltyClientInterface
         foreach ($notEmptyArgs as $key => $arg) {
             $payload[$key] = $arg;
         }
-        return $this->request('integrations/productfeed-mapping', 'POST', $payload);
+        return $this->vOneRequest('integrations/productfeed-mapping', 'POST', $payload);
     }
 
     /**
@@ -425,23 +431,90 @@ class HeyLoyaltyClient implements HeyLoyaltyClientInterface
         foreach ($notEmptyArgs as $key => $arg) {
             $payload[$key] = $arg;
         }
-        return $this->request("integrations/productfeed-mapping/{$feedId}", 'PUT', $payload);
+        return $this->vOneRequest("integrations/productfeed-mapping/{$feedId}", 'PUT', $payload);
+    }
+
+    /**
+     * Import purchase history from csv file. Refer to HeyLoyalty API for different kind of fields
+     *
+     * @param array $fields
+     * @param string $dateFormat
+     * @param bool $skipHeaderLine
+     * @param string $sendErrorsTo
+     * @param string $delimiter
+     * @return array
+     * @throws NoSuchEntityException
+     */
+    public function exportPurchaseHistory(
+        array $fields = ['email'], // Which fields the import file contains
+        string $dateFormat = 'Y-m-d H:i:s', // Date format for all dates in import file
+        bool $skipHeaderLine = true, // Set to false if import file has header line (skip first line)
+        string $sendErrorsTo = 'mkk@wexo.dk', // Email to send errors to
+        string $delimiter = ',' // Which character to separate columns by. Any combo of , ; | :
+    ): array {
+        $payload = [
+            'file' => $this->storeManager->getStore()?->getBaseUrl(self::EXPORT_CSV_URL),
+            'fields_selected' => $fields,
+            'date_format' => $dateFormat,
+            'skip_header_line' => $skipHeaderLine,
+            'sendErrorsTo' => $sendErrorsTo,
+            'delimiter' => $delimiter
+        ];
+        return $this->biRequest("booking/import/{$this->config->getTrackingId()}", 'POST', $payload, true);
+    }
+
+    /**
+     * Send a v1 request.
+     *
+     * @param string $endpoint
+     * @param string $method
+     * @param array $payload
+     * @param bool $multipart
+     * @return array
+     */
+    public function vOneRequest(
+        string $endpoint,
+        string $method = 'GET',
+        array $payload = [],
+        bool $multipart = false
+    ): array {
+        return $this->request(self::BASE_URI, $endpoint, $method, $payload, $multipart);
+    }
+
+    /**
+     * Send a bi request
+     *
+     * @param string $endpoint
+     * @param string $method
+     * @param array $payload
+     * @param bool $multipart
+     * @return array
+     */
+    public function biRequest(
+        string $endpoint,
+        string $method = 'GET',
+        array $payload = [],
+        bool $multipart = false
+    ): array {
+        return $this->request(self::BI_URI, $endpoint, $method, $payload, $multipart);
     }
 
     /**
      * Send a request to the HeyLoyalty API. Returns [] on all errors.
      *
+     * @param string $host
      * @param string $endpoint
      * @param string $method
      * @param array $payload
-     * @param array $multipart
+     * @param bool $multipart
      * @return array
      */
     public function request(
+        string $host,
         string $endpoint,
         string $method = 'GET',
         array $payload = [],
-        array $multipart = []
+        bool $multipart = false
     ): array {
         $requestTimestamp = gmdate("D, d M Y H:i:s") . ' GMT';
         $requestSignature = base64_encode(hash_hmac('sha256', $requestTimestamp, $this->config->getApiSecret()));
@@ -458,17 +531,13 @@ class HeyLoyaltyClient implements HeyLoyaltyClientInterface
         ];
 
         if ($method !== 'GET' || $payload) {
-            $options['json'] = $payload;
+            $type = $multipart ? 'multipart' : 'json';
+            $options[$type] = $payload;
         }
-
-        if ($multipart) {
-            $options['multipart'] = $multipart;
-        }
-
         try {
             $response = $this->client->request(
                 $method,
-                self::BASE_URI . $endpoint,
+                $host . $endpoint,
                 $options
             );
             return $this->json->unserialize($response->getBody()->getContents());
@@ -478,7 +547,7 @@ class HeyLoyaltyClient implements HeyLoyaltyClientInterface
                 'message' => $e->getMessage(),
                 'body' => $response?->getBody()?->getContents()
             ]);
-        } catch (\Throwable $t) {
+        } catch (Throwable $t) {
             $this->logger->error('\Wexo\HeyLoyalty\Model\HeyLoyaltyClient::request Error',[
                 'message' => $t->getMessage()
             ]);

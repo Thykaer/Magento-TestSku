@@ -55,6 +55,24 @@ class HeyLoyaltyPurchaseHistory implements HeyLoyaltyPurchaseHistoryInterface
      */
     public function execute(): array
     {
+        /*
+         select
+            "" as member_email,
+            soi.sku as product_id,
+            "" as category_id,
+            "" as category_name,
+            "" as variation_type,
+            "" as variation_id,
+            "" as product_url,
+            
+        from sales_order_item as soi
+        left join sales_order as so on so.entity_id = soi.order_id
+        where
+            so.customer_id is not null
+            and
+            so.created_at > DATE_SUB(NOW(),INTERVAL 2 YEAR)
+        order by customer_id
+         */
         $storeId = 1;
         $area = Area::AREA_FRONTEND;
 
@@ -67,7 +85,7 @@ class HeyLoyaltyPurchaseHistory implements HeyLoyaltyPurchaseHistoryInterface
             $customerId = $customer->getId();
             $orders = $this->getAllOrdersForACustomer($customerId);
             foreach ($orders as $orderKey => $order) {
-                $items = $this->getAllItemsOnAnOrder();
+                $items = $this->getAllItemsOnAnOrder($order);
                 $orders[$orderKey]['items'] = $items;
                 $customers[$customerKey]['orders'] = $orders[$orderKey];
             }
@@ -101,6 +119,8 @@ class HeyLoyaltyPurchaseHistory implements HeyLoyaltyPurchaseHistoryInterface
         $filter = $this->filterBuilder
             ->setField('customer_id')
             ->setValue($customerId)
+            ->setField('export_to_heyloyalty')
+            ->setValue(1)
             ->create();
         $searchCriteria = $this->searchCriteriaBuilder
             ->addFilter($filter)

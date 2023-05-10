@@ -2,17 +2,20 @@
 
 namespace Wexo\HeyLoyalty\ViewModel;
 
+use Magento\Framework\App\Request\Http;
+use Magento\Framework\View\Element\Block\ArgumentInterface;
 use Wexo\HeyLoyalty\Api\HeyLoyaltyConfigInterface;
 
-class Tracking
+class Tracking implements ArgumentInterface
 {
     public function __construct(
-        public HeyLoyaltyConfigInterface $config
+        public HeyLoyaltyConfigInterface $config,
+        public Http $request
     ) {
     }
 
     /**
-     * Get from config if tracking is activated
+     * Get from config if tracking is activated.
      *
      * @return bool
      */
@@ -38,7 +41,7 @@ class Tracking
      */
     public function getSessionTime(): string
     {
-        return '';
+        return $this->config->getSessionTime();
     }
 
     /**
@@ -49,5 +52,25 @@ class Tracking
     public function getTrackingId(): string
     {
         return $this->config->getTrackingId();
+    }
+
+    /**
+     * Get if current page is a product page
+     *
+     * @return bool
+     */
+    public function isProductPage(): bool
+    {
+        return $this->request->getFullActionName() === 'catalog_product_view';
+    }
+
+    /**
+     * Get if current page is a category page
+     *
+     * @return bool
+     */
+    public function isCategoryPage(): bool
+    {
+        return $this->request->getFullActionName() === 'catalog_category_view';
     }
 }

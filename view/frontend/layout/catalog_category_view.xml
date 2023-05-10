@@ -3,9 +3,9 @@
       xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <body>
         <referenceContainer name="before.body.end">
-            <block class="Wexo\HeyLoyalty\Block\Tracking"
-                   name="wexo_heyloyalty_default_tracking"
-                   template="Wexo_HeyLoyalty::default_tracking.phtml">
+            <block class="Magento\Catalog\Block\Category\View"
+                   name="wexo_heyloyalty_category_tracking"
+                   template="Wexo_HeyLoyalty::category_tracking.phtml">
                 <arguments>
                     <argument name="view_model" xsi:type="object">Wexo\HeyLoyalty\ViewModel\Tracking</argument>
                 </arguments>

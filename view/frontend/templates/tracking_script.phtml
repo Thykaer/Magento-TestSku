@@ -2,58 +2,33 @@
 
 use Magento\Framework\Escaper;
 use Wexo\HeyLoyalty\Block\Tracking as TrackingBlock;
-use Wexo\HeyLoyalty\ViewModel\Tracking as TrackingViewModel;
 
 /** @var TrackingBlock $block */
 /** @var Escaper $escaper */
-/** @var TrackingViewModel $viewModel */
-$viewModel = $block->getViewModel();
-$apiKey = $viewModel->getApiKey();
-$sessionTime = $viewModel->getSessionTime();
-$trackingId = $viewModel->getTrackingId();
+$apiKey = $block->getData('apiKey');
+$sessionTime = $block->getData('sessionTime');
+$trackingId = $block->getData('trackingId');
+$trackingActivated = $block->getData('trackingActivated');
 ?>
-<?php if ($viewModel->getIsTrackingActivated()): ?>
-    <script type="text/javascript" language="javascript">
-        var hlt;
-        var BiTrackingLoaded = function (BiTracking) {
-            hlt=BiTracking;
+<?php if ($trackingActivated): ?>
+    <script type="text/javascript">
+        let BiTrackingLoaded = function (BiTracking) {
+            window.hlt=BiTracking;
             BiTracking.initialize(
-                <?= $escaper->escapeHtml($apiKey) ?>,
-                <?= $escaper->escapeHtml($sessionTime) ?>,
-                <?= $escaper->escapeHtml($trackingId) ?>
+                "<?= $escaper->escapeHtml($apiKey) ?>",
+                "<?= $escaper->escapeHtml($sessionTime) ?>",
+                "<?= $escaper->escapeHtml($trackingId) ?>"
             );
         }
     </script>
     <script>
         (function (d, t) {
-            var g = d.createElement(t),
+            let g = d.createElement(t),
                 s = d.getElementsByTagName(t)[0];
-            h = "https:" == document.location.protocol ? "https://" : "http://";
+            h = "https:" === document.location.protocol ? "https://" : "http://";
             g.src = h + 'bi.heyloyalty.com/hlbi.js';
             s.parentNode.insertBefore(g, s);
         }
         (document, 'script'));
     </script>
 <?php endif; ?>
-
-
-
-
-
-
-<!-- hlt.visit(productid, categoryid, categoryname)/()/(,,categoryname) -->
-
-
-<!--hlt.addToBasket(productid, productCount, categoryid, basketid, categoryname)-->
-
-
-<!--hlt.removeFromBasket(productid)-->
-
-
-<!--hlt.purchasedBasket-->
-
-
-<!--hlt.pairEmail(email)-->
-
-
-<!--hlt.heartbeat()-->

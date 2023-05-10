@@ -10,8 +10,6 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Registry;
 use Magento\Framework\View\Element\BlockInterface;
 use Magento\Framework\View\Element\Html\Select;
-use Wexo\Webshipper\Block\Adminhtml\System\Config\Dropdowns\WebshipperAddressFields;
-use Wexo\Webshipper\Block\Adminhtml\System\Config\Dropdowns\MagentoFields;
 
 class AbstractFrontendModel extends AbstractFieldArray
 {
@@ -33,69 +31,6 @@ class AbstractFrontendModel extends AbstractFieldArray
         array $data = []
     ) {
         parent::__construct($context, $data);
-    }
-
-    /**
-     * Add columns and button
-     *
-     * @return void
-     */
-    protected function _prepareToRender()
-    {
-        $this->addColumn(
-            'hey_loyalty_field',
-            [
-                'label' => __('HeyLoyalty Field'),
-                'class' => 'required-entry',
-                'renderer' => $this->getHeyLoyaltyFields(),
-            ]
-        );
-
-        $this->addColumn(
-            'magento_field',
-            [
-                'label' => __('Magento Field'),
-                'class' => 'required-entry',
-                'renderer' => $this->getMagentoFields(),
-            ]
-        );
-
-        $this->_addAfter = false;
-        $this->_addButtonLabel = __('Add More');
-    }
-
-    /**
-     * Get HeyLoyalty mapping fields
-     *
-     * @return mixed
-     * @throws LocalizedException
-     */
-    public function getHeyLoyaltyFields(): mixed
-    {
-        if (!$this->heyLoyaltyFields) {
-            $this->heyLoyaltyFields = $this->getLayout()->createBlock(
-                WebshipperAddressFields::class,
-                ''
-            );
-        }
-        return $this->heyLoyaltyFields;
-    }
-
-    /**
-     * Get Magento 2 mapping fields
-     *
-     * @return mixed
-     * @throws LocalizedException
-     */
-    public function getMagentoFields(): mixed
-    {
-        if (!$this->magentoFields) {
-            $this->magentoFields = $this->getLayout()->createBlock(
-                MagentoFields::class,
-                ''
-            );
-        }
-        return $this->magentoFields;
     }
 
     /**

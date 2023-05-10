@@ -2,10 +2,22 @@
 
 namespace Wexo\HeyLoyalty\Block\Adminhtml\System\Config\Dropdowns;
 
+use Magento\Framework\View\Element\Context;
+use Wexo\HeyLoyalty\Api\HeyLoyaltyApiInterface;
+use Wexo\HeyLoyalty\Api\HeyLoyaltyConfigInterface;
 use Wexo\HeyLoyalty\Block\Adminhtml\System\Config\AbstractSelect;
 
 class HeyLoyaltyFields extends AbstractSelect
 {
+    public function __construct(
+        Context $context,
+        public HeyLoyaltyConfigInterface $config,
+        public HeyLoyaltyApiInterface $api,
+        array $data = []
+    ) {
+        parent::__construct($context, $data);
+    }
+
     /**
      * Override to get HeyLoyalty to map Magento 2 fields to
      *
@@ -13,8 +25,17 @@ class HeyLoyaltyFields extends AbstractSelect
      */
     public function getSourceOptions(): array
     {
+        $fields = [];
+        $list = $this->api->getList($this->config->getList());
+        foreach ($list['fields'] as $field) {
+            $fields[$field['name']] = $field['label'];
+        }
         return [
             [
+                'label' => 'Fields in list',
+                'value' => $fields
+            ],
+            /*[
                 'label' => 'HeyLoyalty Fixed Fields',
                 'value' => [
                     'firstname' => 'First Name',
@@ -26,37 +47,9 @@ class HeyLoyaltyFields extends AbstractSelect
                     'address' => 'Address',
                     'postalcode' => 'Postal Code',
                     'city' => 'City',
-                    'Country' => 'Country'
-                ]
-            ],
-            [
-                'label' => 'HeyLoyalty Custom Fields',
-                'value' => [
-                    'customer_id' => 'Customer ID',
-                    'customer_type' => 'Customer Type'
-                ]
-            ]
-            /*[
-                'label' => 'Webshipper Address Fields',
-                'value' => [
-                    'att_contact' => 'Att Contact',
-                    'company_name' => 'Company Name',
-                    'address_1' => 'Address 1',
-                    'address_2' => 'Address 2',
-                    'country_code' => 'Country Code',
-                    'state' => 'State',
-                    'phone' => 'Phone',
-                    'email' => 'Email',
-                    'zip' => 'Zip',
-                    'city' => 'City',
-                    'vat_no' => 'Vat No',
-                    'address_type' => 'Address Type',
-                    'ext_location' => 'Ext Location',
-                    'voec' => 'Voec',
-                    'eori' => 'Eori',
-                    'sprn' => 'Sprn',
-                    'personal_customs_no' => 'Personal Customs No',
-                    'company_customs_numbers' => 'Company Customs Numbers',
+                    'Country' => 'Country',
+                    'Password' => 'Password',
+                    'Reference' => 'Reference'
                 ]
             ]*/
         ];
