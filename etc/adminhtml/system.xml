@@ -1,0 +1,120 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <section id="heyloyalty" translate="label" sortOrder="130" showInDefault="1" showInStore="1" showInWebsite="1">
+            <class>separator-top</class>
+            <label>HeyLoyalty</label>
+            <tab>sales</tab>
+            <resource>Wexo_HeyLoyalty::settings</resource>
+            <group id="general"
+                   translate="label"
+                   sortOrder="10"
+                   showInDefault="1"
+                   showInWebsite="1"
+                   showInStore="1">
+                <label>General</label>
+                <field id="enabled"
+                       translate="label"
+                       type="select"
+                       sortOrder="10"
+                       showInDefault="1"
+                       showInWebsite="1"
+                       showInStore="1">
+                    <label>Enabled</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="api_key"
+                       translate="label"
+                       type="text"
+                       sortOrder="20"
+                       showInDefault="1"
+                       showInWebsite="1"
+                       showInStore="1">
+                    <label>API Key</label>
+                </field>
+                <field id="api_secret"
+                       translate="label"
+                       type="text"
+                       sortOrder="30"
+                       showInDefault="1"
+                       showInWebsite="1"
+                       showInStore="1">
+                    <label>API Secret</label>
+                </field>
+                <field id="tracking_activate"
+                       translate="label"
+                       type="select"
+                       sortOrder="40"
+                       showInDefault="1"
+                       showInWebsite="1"
+                       showInStore="1">
+                    <label>Activate Tracking Script</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="tracking_id"
+                       translate="label"
+                       type="text"
+                       sortOrder="50"
+                       showInDefault="1"
+                       showInWebsite="1"
+                       showInStore="1">
+                    <label>Tracking ID</label>
+                </field>
+                <field id="session_time"
+                       translate="label"
+                       type="text"
+                       sortOrder="60"
+                       showInDefault="1"
+                       showInWebsite="1"
+                       showInStore="1">
+                    <label>Session Time</label>
+                </field>
+                <field id="list"
+                       translate="label"
+                       sortOrder="70"
+                       type="select"
+                       showInDefault="1"
+                       showInWebsite="1"
+                       showInStore="1">
+                    <label>List</label>
+                    <source_model>Wexo\HeyLoyalty\Model\Config\Source\HeyLoyaltyList</source_model>
+                </field>
+                <field id="mapper"
+                       translate="label comment"
+                       sortOrder="80"
+                       showInDefault="1"
+                       showInWebsite="1"
+                       showInStore="1">
+                    <label>HeyLoyalty Mapping</label>
+                    <backend_model>Wexo\HeyLoyalty\Block\Adminhtml\System\Config\Mapper\BackendModel</backend_model>
+                    <frontend_model>Wexo\HeyLoyalty\Block\Adminhtml\System\Config\Mapper\FrontendModel</frontend_model>
+                    <comment><![CDATA[<a href='https://github.com/Heyloyalty/api/wiki/Getting-started'>HeyLoyalty API Documentation</a>]]></comment>
+                </field>
+                <field id="purchase_history_activate"
+                       translate="label"
+                       type="select"
+                       sortOrder="90"
+                       showInDefault="1"
+                       showInWebsite="1"
+                       showInStore="1">
+                    <label>Activate Purchase History Export</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="purchase_history_prepare_export"
+                       translate="label"
+                       type="button"
+                       sortOrder="100"
+                       showInDefault="1"
+                       showInWebsite="1"
+                       showInStore="1">
+                    <label>Prepare orders for export to HeyLoyalty</label>
+                    <frontend_model>Wexo\HeyLoyalty\Block\Adminhtml\System\Config\ExportButton</frontend_model>
+                    <depends>
+                        <field id="purchase_history_activate">1</field>
+                    </depends>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

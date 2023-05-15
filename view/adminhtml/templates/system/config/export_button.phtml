@@ -1,0 +1,30 @@
+<?php
+
+use Magento\Framework\Escaper;
+use Wexo\HeyLoyalty\Block\Adminhtml\System\Config\ExportButton;
+
+/** @var ExportButton $block */
+/** @var Escaper $escaper */
+?>
+<div class="heyloyalty_export_container">
+    <button id="<?= $escaper->escapeHtml($block->getId()) ?>" style="width:100px; height:35px">
+        <span><?= $escaper->escapeHtml($block->getLabel()) ?></span>
+    </button>
+</div>
+
+<script>
+    require([
+        'jquery'
+    ], function ($) {
+        $('#heyloyalty_export_button').click(() => {
+            debugger;
+            $.ajax({
+                url: '<?= $escaper->escapeHtml($block->getAjaxUrl()) ?>',
+                type: 'GET',
+                error: function (xhr, status, errorThrown) {
+                    console.log(errorThrown);
+                }
+            });
+        });
+    });
+</script>
