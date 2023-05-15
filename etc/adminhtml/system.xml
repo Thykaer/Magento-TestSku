@@ -104,7 +104,7 @@
                     showInDefault="1"
                     showInWebsite="1"
                     showInStore="1">
-                    <label>Prepare orders for export to HeyLoyalty</label>
+                    <label>Mark orders for export to HeyLoyalty</label>
                     <frontend_model>Wexo\HeyLoyalty\Block\Adminhtml\System\Config\ExportButton</frontend_model>
                     <depends>
                         <field id="heyloyalty/purchase_history/enabled">1</field>

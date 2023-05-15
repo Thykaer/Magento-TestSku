@@ -1,0 +1,33 @@
+{
+    "sales_order": {
+        "column": {
+            "export_to_heyloyalty": true
+        }
+    },
+    "heyloyalty_export": {
+        "column": {
+            "id": true,
+            "member_email": true,
+            "product_id": true,
+            "category_id": true,
+            "category_name": true,
+            "variation_type": true,
+            "variation_id": true,
+            "product_name": true,
+            "product_price": true,
+            "product_url": true,
+            "original_price": true,
+            "discount": true,
+            "description": true,
+            "currency": true,
+            "event_type": true,
+            "amount": true,
+            "created_at": true,
+            "updated_at": true,
+            "custom": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    }
+}

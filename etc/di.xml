@@ -13,13 +13,15 @@
         for="Wexo\HeyLoyalty\Api\HeyLoyaltyConfigInterface"
         type="Wexo\HeyLoyalty\Model\HeyLoyaltyConfig"
     />
-    <!--<type name="Magento\Framework\Console\CommandListInterface">
+    <preference
+        for="Wexo\HeyLoyalty\Api\GeneratePurchaseHistoryInterface"
+        type="Wexo\HeyLoyalty\Model\Api\GeneratePurchaseHistory"
+    />
+    <type name="Magento\Framework\Console\CommandListInterface">
         <arguments>
             <argument name="commands" xsi:type="array">
-                <item name="wexo_heyloyalty_hey_loyalty_debug" xsi:type="object">
-                    Wexo\HeyLoyalty\Console\HeyLoyaltyDebug
-                </item>
+                <item name="wexo_heyloyalty_purchase_history" xsi:type="object">Wexo\HeyLoyalty\Console\HeyLoyaltyDebug</item>
             </argument>
         </arguments>
-    </type>-->
+    </type>
 </config>

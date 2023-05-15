@@ -26,7 +26,8 @@
         <column name="event_type" xsi:type="varchar" nullable="true" length="255" comment="Event Type"/>
         <column name="amount" xsi:type="varchar" nullable="true" length="255" comment="Amount"/>
         <column name="created_at" xsi:type="datetime" comment="Created At"/>
-        <!-- TODO: Add custom fields -->
+        <column name="updated_at" xsi:type="datetime" comment="Updated At"/>
+        <column name="custom" xsi:type="json" nullable="true" comment="Custom Data"/>
         <constraint xsi:type="primary" referenceId="PRIMARY">
             <column name="id"/>
         </constraint>

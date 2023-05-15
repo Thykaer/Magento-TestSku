@@ -5,16 +5,16 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Wexo\HeyLoyalty\Api\HeyLoyaltyPurchaseHistoryInterface;
+use Wexo\HeyLoyalty\Api\GeneratePurchaseHistoryInterface;
 
-class PurchaseHistory extends Command
+class GeneratePurchaseHistory extends Command
 {
     /**
-     * @param HeyLoyaltyPurchaseHistoryInterface $purchaseHistory
+     * @param GeneratePurchaseHistoryInterface $purchaseHistory
      * @param $name
      */
     public function __construct(
-        public HeyLoyaltyPurchaseHistoryInterface $purchaseHistory,
+        public GeneratePurchaseHistoryInterface $purchaseHistory,
         $name = null
     ) {
         parent::__construct($name);
@@ -25,8 +25,8 @@ class PurchaseHistory extends Command
      */
     protected function configure()
     {
-        $this->setName('heyloyalty:purchasehistory');
-        $this->setDescription('Get the HeyLoyalty purchase history.');
+        $this->setName('heyloyalty:purchase_history:generate');
+        $this->setDescription('Generate Purchase History table for CSV consumption');
 
         parent::configure();
     }

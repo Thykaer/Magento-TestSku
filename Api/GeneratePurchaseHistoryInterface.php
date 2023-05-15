@@ -2,7 +2,7 @@
 
 namespace Wexo\HeyLoyalty\Api;
 
-interface HeyLoyaltyPurchaseHistoryInterface
+interface GeneratePurchaseHistoryInterface
 {
     public function execute();
 }

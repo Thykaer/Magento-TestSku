@@ -1,6 +1,6 @@
 <?php
 
-namespace Wexo\HeyLoyalty\Model;
+namespace Wexo\HeyLoyalty\Model\Api;
 
 use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Customer\Api\Data\CustomerInterface;
@@ -16,9 +16,9 @@ use Magento\Sales\Api\OrderItemRepositoryInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Store\Model\App\Emulation;
 use Magento\Store\Model\StoreManager;
-use Wexo\HeyLoyalty\Api\HeyLoyaltyPurchaseHistoryInterface;
+use Wexo\HeyLoyalty\Api\GeneratePurchaseHistoryInterface;
 
-class HeyLoyaltyPurchaseHistory implements HeyLoyaltyPurchaseHistoryInterface
+class GeneratePurchaseHistory implements GeneratePurchaseHistoryInterface
 {
     /**
      * @param State $state
@@ -64,7 +64,6 @@ class HeyLoyaltyPurchaseHistory implements HeyLoyaltyPurchaseHistoryInterface
             "" as variation_type,
             "" as variation_id,
             "" as product_url,
-            
         from sales_order_item as soi
         left join sales_order as so on so.entity_id = soi.order_id
         where

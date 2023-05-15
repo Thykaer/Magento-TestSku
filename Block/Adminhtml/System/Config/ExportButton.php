@@ -8,7 +8,7 @@ use Magento\Framework\Data\Form\Element\AbstractElement;
 class ExportButton extends Field
 {
     /** @var string  */
-    const AJAX_URL = "heyloyalty/purchasehistory/markforexport";
+    const CONTROLLER_URL = "heyloyalty/purchasehistory/markforexport";
 
     /** @var string  */
     public $_template = "Wexo_HeyLoyalty::system/config/export_button.phtml";
@@ -18,9 +18,9 @@ class ExportButton extends Field
      *
      * @return string
      */
-    public function getAjaxUrl(): string
+    public function getControllerURL(): string
     {
-        return $this->getUrl(self::AJAX_URL);
+        return $this->getUrl(self::CONTROLLER_URL);
     }
 
     /**
@@ -33,7 +33,7 @@ class ExportButton extends Field
     {
         $this->addData([
                 'id' => 'heyloyalty_export_button',
-                'label' => __('Prepare Export')
+                'label' => __('Mark Order ( Purchase History for each customer last 2 years )')
             ]);
         return $this->_toHtml();
     }
