@@ -136,7 +136,7 @@ class HeyLoyaltyPurchaseHistory implements HeyLoyaltyPurchaseHistoryInterface
      */
     public function getAllItemsOnAnOrder(OrderInterface $order): array
     {
-        return $order->getAllVisibleItems();
+        return $order->getAllVisibleItems() ?? [];
     }
 
     /**

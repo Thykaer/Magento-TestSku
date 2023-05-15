@@ -14,11 +14,11 @@ class HeyLoyaltyConfig implements HeyLoyaltyConfigInterface
     public const CONFIG_API_KEY = 'heyloyalty/general/api_key';
     public const CONFIG_API_SECRET = 'heyloyalty/general/api_secret';
     public const CONFIG_LIST = 'heyloyalty/general/list';
-    public const CONFIG_TRACKING_ACTIVATE = 'heyloyalty/general/tracking_activate';
     public const CONFIG_MAPPER = 'heyloyalty/general/mapper';
-    public const CONFIG_TRACKING_ID = 'heyloyalty/general/tracking_id';
-    public const CONFIG_SESSION_TIME = 'heyloyalty/general/session_time';
-    public const CONFIG_PURCHASE_HISTORY_ACTIVATE = 'heyloyalty/general/purchase_history_activate';
+    public const CONFIG_TRACKING_ACTIVATE = 'heyloyalty/tracking/enabled';
+    public const CONFIG_TRACKING_ID = 'heyloyalty/tracking/tracking_id';
+    public const CONFIG_SESSION_TIME = 'heyloyalty/tracking/session_time';
+    public const CONFIG_PURCHASE_HISTORY_ACTIVATE = 'heyloyalty/purchase_history/activate';
 
     /**
      * @param ScopeConfigInterface $scopeConfig

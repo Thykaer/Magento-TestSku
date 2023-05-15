@@ -15,10 +15,10 @@ interface HeyLoyaltyApiInterface
     /**
      * Get a list from client
      *
-     * @param int $id
+     * @param string $id
      * @return array
      */
-    public function getList(int $id): array;
+    public function getList(string $id): array;
 
     /**
      * Get from config if tracking is activated

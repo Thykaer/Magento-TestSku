@@ -16,10 +16,10 @@ interface HeyLoyaltyClientInterface
     /**
      * Fetch a single list from HeyLoyalty API
      *
-     * @param int $listId
+     * @param string $listId
      * @return array
      */
-    public function fetchList(int $listId): array;
+    public function fetchList(string $listId): array;
 
     /**
      * Create a list. Refer to HeyLoyalty API for different kinds of fields

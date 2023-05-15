@@ -45,7 +45,7 @@ class HeyLoyaltyApi implements HeyLoyaltyApiInterface
      * @param int $id
      * @return array
      */
-    public function getList(int $id): array
+    public function getList(string $id): array
     {
         return $this->client->fetchList($id);
     }
