@@ -135,6 +135,15 @@ interface HeyLoyaltyClientInterface
     public function deleteListMember(int $listId, string $memberId): array;
 
     /**
+     * Delete list member by email
+     *
+     * @param integer $listId
+     * @param string $email
+     * @return array
+     */
+    public function deleteListMemberByEmail(int $listId, string $email): array;
+
+    /**
      * Move members to another list
      *
      * @param int $sourceListId

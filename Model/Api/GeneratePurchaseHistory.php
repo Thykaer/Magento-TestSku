@@ -32,18 +32,13 @@ class GeneratePurchaseHistory implements GeneratePurchaseHistoryInterface
      * @param FilterBuilder $filterBuilder
      */
     public function __construct(
-        // State Emulation
         public State $state,
         public Emulation $emulation,
         public StoreManager $storeManager,
         public ScopeConfigInterface $scopeConfig,
-
-        // Models required
         public OrderRepositoryInterface $orderRepository,
         public CustomerRepositoryInterface $customerRepository,
         public OrderItemRepositoryInterface $orderItemRepository,
-
-        // Search Criteria
         public SearchCriteriaBuilder $searchCriteriaBuilder,
         public FilterBuilder $filterBuilder,
     ) {

@@ -1,27 +1,13 @@
 <?xml version="1.0"?>
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
-    <preference
-        for="Wexo\HeyLoyalty\Api\HeyLoyaltyApiInterface"
-        type="Wexo\HeyLoyalty\Model\HeyLoyaltyApi"
-    />
-    <preference
-        for="Wexo\HeyLoyalty\Api\HeyLoyaltyClientInterface"
-        type="Wexo\HeyLoyalty\Model\HeyLoyaltyClient"
-    />
-    <preference
-        for="Wexo\HeyLoyalty\Api\HeyLoyaltyConfigInterface"
-        type="Wexo\HeyLoyalty\Model\HeyLoyaltyConfig"
-    />
-    <preference
-        for="Wexo\HeyLoyalty\Api\GeneratePurchaseHistoryInterface"
-        type="Wexo\HeyLoyalty\Model\Api\GeneratePurchaseHistory"
-    />
-    <type name="Magento\Framework\Console\CommandListInterface">
-        <arguments>
-            <argument name="commands" xsi:type="array">
-                <item name="wexo_heyloyalty_purchase_history" xsi:type="object">Wexo\HeyLoyalty\Console\HeyLoyaltyDebug</item>
-            </argument>
-        </arguments>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="Wexo\HeyLoyalty\Api\HeyLoyaltyApiInterface" type="Wexo\HeyLoyalty\Model\HeyLoyaltyApi"/>
+    <preference for="Wexo\HeyLoyalty\Api\HeyLoyaltyClientInterface" type="Wexo\HeyLoyalty\Model\HeyLoyaltyClient"/>
+    <preference for="Wexo\HeyLoyalty\Api\HeyLoyaltyConfigInterface" type="Wexo\HeyLoyalty\Model\HeyLoyaltyConfig"/>
+    <preference for="Wexo\HeyLoyalty\Api\GeneratePurchaseHistoryInterface" type="Wexo\HeyLoyalty\Model\Api\GeneratePurchaseHistory"/>
+    <type name="Magento\Newsletter\Model\SubscriptionManager">
+        <plugin name="model_subscription_manager" type="Wexo\HeyLoyalty\Plugin\Model\SubscriptionManager" sortOrder="1" disabled="false"/>
+    </type>
+    <type name="Magento\Newsletter\Model\SubscriptionManager">
+        <plugin name="model_subscription_manager" type="Wexo\HeyLoyalty\Plugin\Model\SubscriptionManager" sortOrder="1" disabled="false"/>
     </type>
 </config>

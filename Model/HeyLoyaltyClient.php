@@ -15,6 +15,7 @@ use Wexo\HeyLoyalty\Api\HeyLoyaltyConfigInterface;
 class HeyLoyaltyClient implements HeyLoyaltyClientInterface
 {
     public const BASE_URI = 'https://api.heyloyalty.com/loyalty/v1/';
+    public const BASE_URI_V2 = 'https://api.heyloyalty.com/loyalty/v2/';
     public const BI_URI = 'https://bi.heyloyalty.com/api/';
     public const EXPORT_CSV_URL = 'wexo_heyloyalty/purchasehistory/csvexport';
 
@@ -214,6 +215,14 @@ class HeyLoyaltyClient implements HeyLoyaltyClientInterface
         return $this->vOneRequest("lists/{$listId}/members/{$memberId}", 'DELETE');
     }
 
+    public function deleteListMemberByEmail(int $listId, string $email): array
+    {
+        return $this->request(self::BASE_URI_V2, "lists/members/byfield", 'DELETE', [
+            "field" => "email",
+            "value" => $email,
+            "lists" => [$listId]
+        ]);
+    }
     /**
      * Move members to another list
      *

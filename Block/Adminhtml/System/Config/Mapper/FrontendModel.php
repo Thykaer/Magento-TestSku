@@ -18,7 +18,7 @@ class FrontendModel extends AbstractFrontendModel
     protected function _prepareToRender(): void
     {
         $this->addColumn(
-            'hey_loyalty_field',
+            'heyloyalty_field',
             [
                 'label' => __('HeyLoyalty Field'),
                 'class' => 'required-entry',

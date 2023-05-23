@@ -33,4 +33,16 @@ interface HeyLoyaltyApiInterface
      * @return string
      */
     public function getTrackingId(): string;
+
+
+    /**
+     * Create a list member in Heyloyalty
+     *
+     * @param string $listId
+     * @param array $fields
+     * @return array
+     */
+    public function createListMember(string $listId, array $fields = []): array;
+
+    public function deleteListMemberByEmail(string $listId, string $email): array;
 }

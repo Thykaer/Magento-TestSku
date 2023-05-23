@@ -14,7 +14,7 @@ class HeyLoyaltyConfig implements HeyLoyaltyConfigInterface
     public const CONFIG_API_KEY = 'heyloyalty/general/api_key';
     public const CONFIG_API_SECRET = 'heyloyalty/general/api_secret';
     public const CONFIG_LIST = 'heyloyalty/general/list';
-    public const CONFIG_MAPPER = 'heyloyalty/general/mapper';
+    public const CONFIG_MAPPER = 'heyloyalty/general/mappings';
     public const CONFIG_TRACKING_ACTIVATE = 'heyloyalty/tracking/enabled';
     public const CONFIG_TRACKING_ID = 'heyloyalty/tracking/tracking_id';
     public const CONFIG_SESSION_TIME = 'heyloyalty/tracking/session_time';
@@ -25,7 +25,10 @@ class HeyLoyaltyConfig implements HeyLoyaltyConfigInterface
      */
     public function __construct(
         public ScopeConfigInterface $scopeConfig,
-        public Json $json
+        public Json $json,
+        public \Magento\Store\Model\Information $storeInformation,
+        public \Magento\Store\Model\StoreManagerInterface $storeManager,
+        public \Magento\Customer\Api\AddressRepositoryInterface $addressRepository
     ) {
     }
 
@@ -97,18 +100,66 @@ class HeyLoyaltyConfig implements HeyLoyaltyConfigInterface
     /**
      * Get HeyLoyalty field mapping
      *
-     * @return string
+     * @return array
      */
-    public function getMapping(): string
+    public function getMappings(): array
     {
         try {
             return $this->json->unserialize($this->scopeConfig->getValue(
                 self::CONFIG_MAPPER,
                 ScopeInterface::SCOPE_STORE
-            )) ?? '';
+            )) ?? [];
         } catch (InvalidArgumentException $e) {
-            return '';
+            return [];
         }
+    }
+
+    public function mapFields($customer = null): array
+    {
+        if (!$customer) {
+            return [];
+        }
+        $fields = [];
+        $mappings = $this->getMappings();
+        try {
+            $defaultBillingId = $customer->getDefaultBilling();
+            $defaultShippingId = $customer->getDefaultShipping();
+            $billingAddress = $this->addressRepository->getById($defaultBillingId);
+            $shippingAddress = $this->addressRepository->getById($defaultShippingId);
+            $storeInformation = $this->storeInformation->getStoreInformationObject($this->storeManager->getStore());
+
+            foreach ($mappings as $mapping) {
+                if(!isset($mapping['magento_field']) && !isset($mapping['heyloyalty_field'])) {
+                    continue;
+                }
+                $magentoField = $mapping['magento_field'];
+                if (str_contains($magentoField, 'store')) {
+                    $fields[$mapping['heyloyalty_field']] = $storeInformation->getData(str_replace('store_', '', $magentoField));
+                    continue;
+                }
+                if (str_contains($magentoField, 'shipping')) {
+                    $methodName = 'get' . str_replace('shipping_', '', ucwords($magentoField, '_'));
+                    $fields[$mapping['heyloyalty_field']] = $shippingAddress->$methodName();
+                    continue;
+                }
+                if (str_contains($magentoField, 'billing')) {
+                    $methodName = 'get' . str_replace('billing_', '', ucwords($magentoField, '_'));
+                    $fields[$mapping['heyloyalty_field']] = $billingAddress->$methodName();
+                    continue;
+                }
+
+                $methodName = 'get' . str_replace('_', '', ucwords($magentoField, '_'));
+                try{
+                    $fields[$mapping['heyloyalty_field']] = $customer->$methodName();
+                }catch(\Throwable $e){
+                    // do nothing, field might not exist on customer object
+                }
+            }
+            dd($fields);
+        } catch (\Exception $e) {
+            dd($e->getMessage());
+        }
+        return $fields;
     }
 
     /**
@@ -145,8 +196,8 @@ class HeyLoyaltyConfig implements HeyLoyaltyConfigInterface
     public function getIsPurchaseHistoryActivated(): bool
     {
         return $this->scopeConfig->getValue(
-                self::CONFIG_PURCHASE_HISTORY_ACTIVATE,
-                ScopeInterface::SCOPE_STORE
-            ) === '1';
+            self::CONFIG_PURCHASE_HISTORY_ACTIVATE,
+            ScopeInterface::SCOPE_STORE
+        ) === '1';
     }
 }

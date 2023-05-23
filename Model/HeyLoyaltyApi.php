@@ -90,4 +90,14 @@ class HeyLoyaltyApi implements HeyLoyaltyApiInterface
     ): array {
         return $this->client->exportPurchaseHistory($fields, $dateFormat, $skipHeaderLine, $sendErrorsTo, $delimiter);
     }
+
+    public function createListMember(string $listId, array $fields = []): array
+    {
+        return $this->client->createListMember($listId, $fields);
+    }
+
+    public function deleteListMemberByEmail(string $listId, string $email): array
+    {
+        return $this->client->deleteListMemberByEmail($listId, $email);
+    }
 }
