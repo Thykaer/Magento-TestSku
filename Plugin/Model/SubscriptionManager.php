@@ -103,7 +103,7 @@ class SubscriptionManager
                     $customer = $this->customerRepository->get($subscriber->getSubscriberEmail());
                     $fields['firstname'] = $customer->getFirstname();
                     $fields['lastname'] = $customer->getLastname();
-                    array_merge(
+                    $fields = array_merge(
                         $fields,
                         $this->heyLoyaltyConfig->mapFields($customer)
                     );

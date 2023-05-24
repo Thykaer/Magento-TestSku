@@ -544,12 +544,26 @@ class HeyLoyaltyClient implements HeyLoyaltyClientInterface
             $options[$type] = $payload;
         }
         try {
+            $this->logger->debug('\Wexo\HeyLoyalty\Model\HeyLoyaltyClient::request - Request', [
+                'host' => $host,
+                'endpoint' => $endpoint,
+                'method' => $method,
+                'options' => $options
+            ]);
             $response = $this->client->request(
                 $method,
                 $host . $endpoint,
                 $options
             );
-            return $this->json->unserialize($response->getBody()->getContents());
+            $responseJson = $this->json->unserialize($response->getBody()->getContents());
+            $this->logger->debug('\Wexo\HeyLoyalty\Model\HeyLoyaltyClient::request - Response', [
+                'host' => $host,
+                'endpoint' => $endpoint,
+                'method' => $method,
+                'payload' => $payload,
+                'response' => $responseJson
+            ]);
+            return $responseJson;
         } catch (ClientException $e) {
             $response = $e?->getResponse();
             $this->logger->error('\Wexo\HeyLoyalty\Model\HeyLoyaltyClient::request Error',[

@@ -28,7 +28,8 @@ class HeyLoyaltyConfig implements HeyLoyaltyConfigInterface
         public Json $json,
         public \Magento\Store\Model\Information $storeInformation,
         public \Magento\Store\Model\StoreManagerInterface $storeManager,
-        public \Magento\Customer\Api\AddressRepositoryInterface $addressRepository
+        public \Magento\Customer\Api\AddressRepositoryInterface $addressRepository,
+        public \Psr\Log\LoggerInterface $logger
     ) {
     }
 
@@ -129,37 +130,73 @@ class HeyLoyaltyConfig implements HeyLoyaltyConfigInterface
             $storeInformation = $this->storeInformation->getStoreInformationObject($this->storeManager->getStore());
 
             foreach ($mappings as $mapping) {
-                if(!isset($mapping['magento_field']) && !isset($mapping['heyloyalty_field'])) {
-                    continue;
-                }
-                $magentoField = $mapping['magento_field'];
-                if (str_contains($magentoField, 'store')) {
-                    $fields[$mapping['heyloyalty_field']] = $storeInformation->getData(str_replace('store_', '', $magentoField));
-                    continue;
-                }
-                if (str_contains($magentoField, 'shipping')) {
-                    $methodName = 'get' . str_replace('shipping_', '', ucwords($magentoField, '_'));
-                    $fields[$mapping['heyloyalty_field']] = $shippingAddress->$methodName();
-                    continue;
-                }
-                if (str_contains($magentoField, 'billing')) {
-                    $methodName = 'get' . str_replace('billing_', '', ucwords($magentoField, '_'));
-                    $fields[$mapping['heyloyalty_field']] = $billingAddress->$methodName();
-                    continue;
-                }
-
-                $methodName = 'get' . str_replace('_', '', ucwords($magentoField, '_'));
                 try{
-                    $fields[$mapping['heyloyalty_field']] = $customer->$methodName();
+                    if(!isset($mapping['magento_field']) && !isset($mapping['heyloyalty_field'])) {
+                        continue;
+                    }
+                    $magentoField = $mapping['magento_field'];
+                    $heyLoyaltyField = $mapping['heyloyalty_field'];
+                    switch (true) {
+                        case str_contains($magentoField, 'store'):
+                            $fields[$heyLoyaltyField] = $storeInformation->getData(str_replace('store_', '', $magentoField));
+                            break;
+                        case str_contains($magentoField, 'shipping'):
+                            $methodName = $this->generateMethodName($magentoField, 'shipping');
+                            $fields[$heyLoyaltyField] = $this->getFieldValue($shippingAddress, $magentoField, 'shipping');
+                            break;
+                        case str_contains($magentoField, 'billing'):
+                            $fields[$heyLoyaltyField] = $this->getFieldValue($billingAddress, $magentoField, 'billing');
+                            break;
+                        default:
+                            $fields[$heyLoyaltyField] = $this->getFieldValue($customer, $magentoField);
+                            break;
+                    }
                 }catch(\Throwable $e){
-                    // do nothing, field might not exist on customer object
+                    $this->logger->debug(
+                        'Wexo_HeyLoyaltyConfig::mapFields Error finding map for ' . $magentoField . ' and ' . $heyLoyaltyField, 
+                        [
+                            'customer' => $customer->getEmail(),
+                            'mappings' => $mappings,
+                            'fields' => $fields,
+                            'error' => $e->getMessage()
+                        ]
+                    );
                 }
             }
-            dd($fields);
-        } catch (\Exception $e) {
-            dd($e->getMessage());
+        } catch (\Exception $e) {  
+            $this->logger->debug(
+                '\Wexo\HeyLoyalty\Model\HeyLoyaltyConfig::mapFields ERROR', 
+                [
+                    'customer' => $customer->getEmail(),
+                    'error' => $e->getMessage()
+                ]
+            );
         }
+        $this->logger->debug('\Wexo\HeyLoyalty\Model\HeyLoyaltyConfig::mapFields', 
+            [
+                'customer' => $customer->getEmail(),
+                'mappings' => $mappings,
+                'fields' => $fields
+            ]
+        );
         return $fields;
+    }
+
+    public function generateMethodName($field, $prefix = '')
+    {
+        $field = str_replace($prefix, '', $field);
+        $methodName = 'get' . str_replace('_', '', ucwords($field, '_'));
+        return $methodName;
+    }
+
+    private function getFieldValue($object, $field, $prefix = '')
+    {
+        $methodName = $this->generateMethodName($field, $prefix);
+        $value = $object->$methodName();
+        if (is_array($value)) {
+            $value = implode(', ', $value);
+        }
+        return $value;
     }
 
     /**

@@ -31,35 +31,41 @@ class MagentoFields extends AbstractSelect
             [
                 'label' => 'Shipping Information',
                 'value' => [
-                    'shipping_name' => 'Shipping Full Name',
+                    'shipping_customer_id' => 'Shipping Customer Id',
                     'shipping_firstname' => 'Shipping First Name',
+                    'shipping_middlename' => 'Shipping Middle Name',
                     'shipping_lastname' => 'Shipping Last Name',
                     'shipping_email' => 'Shipping Email',
                     'shipping_telephone' => 'Shipping Phone',
                     'shipping_country_id' => 'Shipping Country',
                     'shipping_region' => 'Shipping Region',
+                    'shipping_region_id' => 'Shipping Region Id',
+                    'shipping_street' => 'Shipping Street',
                     'shipping_postcode' => 'Shipping Zip/Postal Code',
                     'shipping_city' => 'Shipping City',
-                    'shipping_street' => 'Shipping Street',
                     'shipping_company' => 'Shipping Company',
                     'shipping_fax' => 'Shipping Fax',
+                    'shipping_vat_id' => 'Shipping VAT',
                 ]
             ],
             [
                 'label' => 'Billing Information',
                 'value' => [
-                    'billing_name' => 'Billing Full Name',
+                    'billing_customer_id' => 'Billing Customer Id',
                     'billing_firstname' => 'Billing First Name',
+                    'billing_middlename' => 'Billing Middle Name',
                     'billing_lastname' => 'Billing Last Name',
                     'billing_email' => 'Billing Email',
                     'billing_telephone' => 'Billing Phone',
                     'billing_country_id' => 'Billing Country',
                     'billing_region' => 'Billing Region',
+                    'billing_region_id' => 'Billing Region Id',
+                    'billing_street' => 'Billing Street',
                     'billing_postcode' => 'Billing Zip/Postal Code',
                     'billing_city' => 'Billing City',
-                    'billing_street' => 'Billing Street',
                     'billing_company' => 'Billing Company',
                     'billing_fax' => 'Billing Fax',
+                    'billing_vat_id' => 'Billing VAT',
                 ]
             ]
         ];
