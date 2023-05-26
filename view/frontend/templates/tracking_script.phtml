@@ -131,7 +131,7 @@ require(['Magento_Customer/js/customer-data'], function (customerData) {
                 product_sku: item.product_sku
             }
         });
-        let add_to_cart = getAddedItems(cartUpdatedData, initialCartData);
+        let add_to_cart = getAddedItems(initialCartData, cartUpdatedData);
         let remove_from_cart = getRemovedItems(initialCartData, cartUpdatedData);
         add_to_cart.forEach(function(item){
             hltAddToBasket(item.product_id, item.qty);
@@ -148,7 +148,7 @@ require(['Magento_Customer/js/customer-data'], function (customerData) {
 });
 
 function getAddedItems(oldArray, newArray) {
-  return newArray.filter(item => !oldArray.some(oldItem => oldItem.product_id === item.product_id));
+  return newArray.filter(item => !oldArray.some(oldItem => oldItem.product_id === item.product_id && oldItem.qty === item.qty));
 }
 
 function getRemovedItems(oldArray, newArray) {
