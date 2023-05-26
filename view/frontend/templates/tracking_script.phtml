@@ -148,11 +148,13 @@ require(['Magento_Customer/js/customer-data'], function (customerData) {
 });
 
 function getAddedItems(oldArray, newArray) {
-  return newArray.filter(item => !oldArray.some(oldItem => oldItem.product_id === item.product_id && oldItem.qty === item.qty));
+  let diff = newArray.filter(item => !oldArray.some(oldItem => oldItem.product_id === item.product_id && oldItem.qty === item.qty));
+  // foreach diff find item in old array and minus qty
 }
 
 function getRemovedItems(oldArray, newArray) {
   return oldArray.filter(oldItem => !newArray.some(item => item.product_id === oldItem.product_id));
+  // foreach diff find item in old array and minus qty
 }
 
 function combineItems(item){
