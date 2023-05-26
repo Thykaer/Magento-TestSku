@@ -455,21 +455,24 @@ class HeyLoyaltyClient implements HeyLoyaltyClientInterface
      * @throws NoSuchEntityException
      */
     public function exportPurchaseHistory(
-        array $fields = ['email'], // Which fields the import file contains
-        string $dateFormat = 'Y-m-d H:i:s', // Date format for all dates in import file
-        bool $skipHeaderLine = true, // Set to false if import file has header line (skip first line)
-        string $sendErrorsTo = 'mkk@wexo.dk', // Email to send errors to
-        string $delimiter = ',' // Which character to separate columns by. Any combo of , ; | :
+        string $file,
+        string $trackingId,
+        array $fields = [],
+        string $sendErrorsTo = '',
+        string $dateFormat = 'Y-m-d H:i:s',
+        bool $skipHeaderLine = false,
+        string $delimiter = ',',
     ): array {
         $payload = [
-            'file' => $this->storeManager->getStore()?->getBaseUrl(self::EXPORT_CSV_URL),
-            'fields_selected' => $fields,
+            'file' => $file,
             'date_format' => $dateFormat,
             'skip_header_line' => $skipHeaderLine,
             'sendErrorsTo' => $sendErrorsTo,
-            'delimiter' => $delimiter
+            'delimiter' => $delimiter,
+            'fields_selected' => $fields,
         ];
-        return $this->biRequest("booking/import/{$this->config->getTrackingId()}", 'POST', $payload, true);
+        dump($payload);
+        return $this->request("https://bi.heyloyalty.com/","api/booking/import/{$trackingId}", 'POST', $payload);
     }
 
     /**
@@ -566,11 +569,13 @@ class HeyLoyaltyClient implements HeyLoyaltyClientInterface
             return $responseJson;
         } catch (ClientException $e) {
             $response = $e?->getResponse();
+            dd($e);
             $this->logger->error('\Wexo\HeyLoyalty\Model\HeyLoyaltyClient::request Error',[
                 'message' => $e->getMessage(),
                 'body' => $response?->getBody()?->getContents()
             ]);
         } catch (Throwable $t) {
+            dd($t);
             $this->logger->error('\Wexo\HeyLoyalty\Model\HeyLoyaltyClient::request Error',[
                 'message' => $t->getMessage()
             ]);

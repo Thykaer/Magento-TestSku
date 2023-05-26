@@ -16,9 +16,11 @@ class HeyLoyaltyConfig implements HeyLoyaltyConfigInterface
     public const CONFIG_LIST = 'heyloyalty/general/list';
     public const CONFIG_MAPPER = 'heyloyalty/general/mappings';
     public const CONFIG_TRACKING_ACTIVATE = 'heyloyalty/tracking/enabled';
-    public const CONFIG_TRACKING_ID = 'heyloyalty/tracking/tracking_id';
+    public const CONFIG_TRACKING_ID = 'heyloyalty/tracking/id';
     public const CONFIG_SESSION_TIME = 'heyloyalty/tracking/session_time';
     public const CONFIG_PURCHASE_HISTORY_ACTIVATE = 'heyloyalty/purchase_history/activate';
+    public const CONFIG_PURCHASE_HISTORY_ERROR_EMAIL = 'heyloyalty/purchase_history/error_email';
+
 
     /**
      * @param ScopeConfigInterface $scopeConfig
@@ -236,5 +238,13 @@ class HeyLoyaltyConfig implements HeyLoyaltyConfigInterface
             self::CONFIG_PURCHASE_HISTORY_ACTIVATE,
             ScopeInterface::SCOPE_STORE
         ) === '1';
+    }
+
+    public function getPurchaseHistoryErrorEmail(): string
+    {
+        return $this->scopeConfig->getValue(
+            self::CONFIG_PURCHASE_HISTORY_ERROR_EMAIL,
+            ScopeInterface::SCOPE_STORE
+        ) ?? '';
     }
 }

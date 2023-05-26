@@ -67,4 +67,7 @@ interface HeyLoyaltyConfigInterface
      * @return string
      */
     public function getSessionTime(): string;
+
+    public function getIsPurchaseHistoryActivated(): bool;
+    public function getPurchaseHistoryErrorEmail(): string;
 }

@@ -13,17 +13,16 @@ use Magento\Framework\Filesystem;
 
 class CsvExport implements HttpGetActionInterface
 {
-    public Filesystem\Directory\WriteInterface $directory;
-
-    /**
-     * @throws FileSystemException
-     */
     public function __construct(
-        public Filesystem $filesystem,
-        public FileFactory $fileFactory,
-        public ResourceConnection $connection
+        public ResourceConnection $connection,
+        public \Magento\Framework\App\RequestInterface $request,
+        public \Magento\Framework\App\ResponseFactory $responseFactory,
+        public \Magento\Store\Model\App\Emulation $emulation,
+        public \Magento\Store\Model\StoreManagerInterface $storeManager,
+        public \Wexo\HeyLoyalty\Api\HeyLoyaltyConfigInterface $config,
+        public \Wexo\HeyLoyalty\Api\HeyLoyaltyApiInterface $api,
+        public \Magento\Framework\App\CacheInterface $cache
     ) {
-        $this->directory = $this->filesystem->getDirectoryWrite(DirectoryList::VAR_DIR);
     }
 
     /**
@@ -35,45 +34,37 @@ class CsvExport implements HttpGetActionInterface
      */
     public function execute(): ResponseInterface
     {
-        $connection = $this->connection->getConnection();
-        $table = $connection->getTableName('heyloyalty_export');
-        $query = "SELECT * {$table}";
-        $data = $connection->fetchAll($query);
+        $securityKeyParam = $this->request->getParam('security_key');
+        $storeId = $this->request->getParam('store_id', 1);
+        $debug = (bool) $this->request->getParam('debug', false);
 
-        $path = 'heyloyalty/export.csv';
-        $fileName = 'Export.csv';
-        $this->directory->create('heyloyalty');
-        $stream = $this->directory->openFile($path, 'w+');
-        $stream->lock();
+        $this->validate($storeId, $securityKeyParam);
 
-        $data = [
-            [
-                'sku' => '1',
-                'name' => 'Test1',
-                'price' => 100
-            ],
-            [
-                'sku' => '2',
-                'name' => 'Test2',
-                'price' => 200
-            ],
-            [
-                'sku' => '3',
-                'name' => 'Test3',
-                'price' => 50
-            ]
-        ];
+        $csv = $this->api->generatePurchaseHistory($storeId);
 
-        foreach ($data as $product) {
-            $line = [];
-            $line[] = $product['sku'];
-            $line[] = $product['name'];
-            $line[] = $product['price'];
-            $stream->writeCsv($line);
+        $response = $this->responseFactory->create();
+        if($debug){
+            $response->setHeader('Content-Type', 'text/plain charset=UTF-8');
+        }else{
+            $response->setHeader('Content-Type', 'text/csv charset=UTF-8');
+            $response->setHeader('Content-Disposition', 'attachment; filename="purchase_history.csv"');
         }
-
-        $content['type'] = 'filename';
-        $content['value'] = $path;
-        return $this->fileFactory->create($fileName, $content, DirectoryList::VAR_DIR);
+        $response->setBody($csv);
+        return $response;
     }
+
+    public function validate($storeId, $securityKeyParam)
+    {
+        $securityKey = $this->api->generatePurchaseHistorySecurityKey();
+        if($securityKeyParam !== $securityKey){
+            throw new \Exception('Security key is not valid');
+        }
+        $this->emulation->startEnvironmentEmulation($storeId, 'frontend');
+        $enabled = $this->config->isEnabled();
+        if(!$enabled){
+            throw new \Exception('Module is not enabled');
+        }
+        $this->emulation->stopEnvironmentEmulation();
+    }
+
 }

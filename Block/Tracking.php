@@ -20,23 +20,5 @@ class Tracking extends Template
         parent::__construct($context, $data);
     }
 
-    public function getProduct()
-    {
-        return $this->_coreRegistry->registry('current_product');
-    }
 
-    public function getCategory()
-    {
-        return $this->_coreRegistry->registry('current_category');
-    }
-
-    public function getQuoteId()
-    {
-        return $this->checkoutSession->getQuoteId();
-    }
-
-    public function getEmail()
-    {
-        return $this->customerSession->getCustomer()->getEmail();
-    }
 }

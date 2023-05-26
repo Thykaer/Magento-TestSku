@@ -86,17 +86,6 @@
                 showInStore="1">
                 <label>Purchase History</label>
                 <attribute type="expanded">1</attribute>
-
-                <field id="enabled"
-                    translate="label"
-                    type="select"
-                    sortOrder="90"
-                    showInDefault="1"
-                    showInWebsite="1"
-                    showInStore="1">
-                    <label>Activate Purchase History Export</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                </field>
                 <field id="prepare_orders_for_export"
                     translate="label"
                     type="button"
@@ -104,11 +93,17 @@
                     showInDefault="1"
                     showInWebsite="1"
                     showInStore="1">
-                    <label>Mark orders for export to HeyLoyalty</label>
+                    <label>Purchase History export to HeyLoyalty</label>
                     <frontend_model>Wexo\HeyLoyalty\Block\Adminhtml\System\Config\ExportButton</frontend_model>
-                    <depends>
-                        <field id="heyloyalty/purchase_history/enabled">1</field>
-                    </depends>
+                </field>
+                <field id="error_email"
+                    translate="label"
+                    type="text"
+                    sortOrder="50"
+                    showInDefault="1"
+                    showInWebsite="1"
+                    showInStore="1">
+                    <label>Who to send Error Reports to</label>
                 </field>
                 <depends>
                     <field id="heyloyalty/general/enabled">1</field>

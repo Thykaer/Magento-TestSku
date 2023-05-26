@@ -5,10 +5,15 @@ use Wexo\HeyLoyalty\Block\Tracking as TrackingBlock;
 
 /** @var TrackingBlock $block */
 /** @var Escaper $escaper */
-$apiKey = $block->getData('apiKey');
-$sessionTime = $block->getData('sessionTime');
-$trackingId = $block->getData('trackingId');
-$trackingActivated = $block->getData('trackingActivated');
+$viewModel = $block->getViewModel();
+$apiKey = $viewModel->getApiKey();
+$sessionTime = $viewModel->getSessionTime();
+$trackingId = $viewModel->getTrackingId();
+$trackingActivated = $viewModel->getIsTrackingActivated();
+
+$product = $viewModel->getCurrentProduct();
+$category = $viewModel->getCurrentCategory();
+$quoteId = $viewModel->getQuoteId();
 ?>
 <?php if ($trackingActivated): ?>
     <script type="text/javascript">
@@ -19,6 +24,7 @@ $trackingActivated = $block->getData('trackingActivated');
                 "<?= $escaper->escapeHtml($sessionTime) ?>",
                 "<?= $escaper->escapeHtml($trackingId) ?>"
             );
+            hltVisit();
         }
     </script>
     <script>
@@ -31,4 +37,127 @@ $trackingActivated = $block->getData('trackingActivated');
         }
         (document, 'script'));
     </script>
+
+<!-- hlt.visit(productid, categoryid, categoryname)/()/(,,categoryname) -->
+<script>
+    function hltVisit(){
+        console.debug('HeyLoyalty :: HIT',
+        [
+            "<?= $product?->getId() ?? '' ?>",
+            "<?= $category?->getId() ?? '' ?>",
+            "<?= $category?->getName() ?? '' ?>"
+        ])
+        window.hlt.visit(
+            "<?= $product?->getId() ?? '' ?>",
+            "<?= $category?->getId() ?? '' ?>",
+            "<?= $category?->getName() ?? '' ?>"
+        ); 
+    }
+</script>
+
+
+<!--hlt.addToBasket(productid, productCount, categoryid, basketid, categoryname)-->
+<script>
+    function hltAddToBasket(productId, qty) {
+        console.debug('HeyLoyalty :: AddToBasket', [
+            productId,
+            qty,
+            "<?= $category?->getId() ?? '' ?>",
+            "<?= $quoteId ?>",
+            "<?= $category?->getName() ?? '' ?>"
+        ]);
+        window.hlt.addToBasket(productId, "1", "<?= $category?->getId() ?? '' ?>", "<?= $quoteId ?>", "<?= $category?->getName() ?? '' ?>");
+    }
+</script>
+
+<!--hlt.removeFromBasket(productid)-->
+<script>
+    function hltRemoveFromBasket(productId) {
+        console.debug('HeyLoyalty :: RemoveFromBasket', [
+            productId
+        ]);
+        window.hlt.removeFromBasket(productId);
+    }
+</script>
+
+<!--hlt.purchasedBasket-->
+<script>
+    function hltPurchasedBasket() {
+        window.hlt.purchasedBasket();
+    }
+</script>
+
+<!--hlt.pairEmail(email)-->
+<script>
+    function hltPairEmail() {
+        <?php
+        $email = $block->getEmail() ?? '';
+        ?>
+        window.hlt.pairEmail("<?= $email ?>");
+    }
+</script>
+
+<!--hlt.heartbeat()-->
+<script>
+    function hltHeartbeat() {
+        window.hlt.heartbeat();
+    }
+</script>
+
+
+<script>
+    
+require(['Magento_Customer/js/customer-data'], function (customerData) {
+    let cart = customerData.get('cart');
+    let init = true;
+    let initialCartData = [];
+    console.log(cart);
+    cart.subscribe(function (test) {
+        console.debug('YO');
+        if(init){
+            initialCartData = cart().items.map(item => {
+                return {
+                    product_id: item.product_id,
+                    qty: item.qty,
+                    product_sku: item.product_sku
+                }
+            })
+            init = false;
+        }
+        let cartUpdatedData = cart().items.map(item => {
+            return {
+                product_id: item.product_id,
+                qty: item.qty,
+                product_sku: item.product_sku
+            }
+        });
+        let add_to_cart = getAddedItems(cartUpdatedData, initialCartData);
+        let remove_from_cart = getRemovedItems(initialCartData, cartUpdatedData);
+        add_to_cart.forEach(function(item){
+            hltAddToBasket(item.product_id, item.qty);
+        });
+        remove_from_cart.forEach(function(item){
+            hltRemoveFromBasket(item.product_id);
+        });
+        initialCartData = cartUpdatedData;
+        console.debug('HeyLoyalty Cart Updated', {
+            add_to_cart: add_to_cart,
+            remove_from_cart: remove_from_cart
+        });
+    });
+});
+
+function getAddedItems(oldArray, newArray) {
+  return newArray.filter(item => !oldArray.some(oldItem => oldItem.product_id === item.product_id));
+}
+
+function getRemovedItems(oldArray, newArray) {
+  return oldArray.filter(oldItem => !newArray.some(item => item.product_id === oldItem.product_id));
+}
+
+function combineItems(item){
+    return item.product_id + '_' + item.qty + '_' + item.product_sku;
+}
+
+</script>
 <?php endif; ?>
