@@ -5,7 +5,7 @@ namespace Wexo\HeyLoyalty\Api;
 interface HeyLoyaltyConfigInterface
 {
     /**
-     * Get if the HeyLoyal module is enabled
+     * Check if the HeyLoyal module is enabled
      *
      * @return bool
      */
@@ -26,7 +26,7 @@ interface HeyLoyaltyConfigInterface
     public function getApiSecret(): string;
 
     /**
-     * Get if tracking is activated
+     * Check if tracking is activated
      *
      * @return bool
      */

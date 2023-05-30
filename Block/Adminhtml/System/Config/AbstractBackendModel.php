@@ -15,17 +15,7 @@ abstract class AbstractBackendModel extends ConfigValue
 {
     /** @var SerializerInterface $serializer */
     protected SerializerInterface $serializer;
-
-    /**
-     * @param SerializerInterface $serializer
-     * @param Context $context
-     * @param Registry $registry
-     * @param ScopeConfigInterface $config
-     * @param TypeListInterface $cacheTypeList
-     * @param AbstractResource|null $resource
-     * @param AbstractDb|null $resourceCollection
-     * @param array $data
-     */
+    
     public function __construct(
         SerializerInterface $serializer,
         Context $context,

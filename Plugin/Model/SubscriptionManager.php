@@ -4,36 +4,12 @@ namespace Wexo\Heyloyalty\Plugin\Model;
 
 class SubscriptionManager
 {
-    /**
-     * @var \Psr\Log\LoggerInterface
-     */
-    private $logger;
-
-    /**
-     * @var \Wexo\Heyloyalty\Api\HeyLoyaltyConfigInterface
-     */
-    private $heyLoyaltyConfig;
-
-    /**
-     * @var \Wexo\Heyloyalty\Api\HeyLoyaltyApiInterface
-     */
-    private $heyLoyaltyApi;
-
-    /**
-     * @var \Magento\Customer\Api\CustomerRepositoryInterface
-     */
-    private $customerRepository;
-
     public function __construct(
-        \Psr\Log\LoggerInterface $logger,
-        \Wexo\Heyloyalty\Api\HeyLoyaltyConfigInterface $heyLoyaltyConfig,
-        \Wexo\Heyloyalty\Api\HeyLoyaltyApiInterface $heyLoyaltyApi,
-        \Magento\Customer\Api\CustomerRepositoryInterface $customerRepository
+        public \Psr\Log\LoggerInterface $logger,
+        public \Wexo\Heyloyalty\Api\HeyLoyaltyConfigInterface $heyLoyaltyConfig,
+        public \Wexo\Heyloyalty\Api\HeyLoyaltyApiInterface $heyLoyaltyApi,
+        public \Magento\Customer\Api\CustomerRepositoryInterface $customerRepository
     ) {
-        $this->logger = $logger;
-        $this->heyLoyaltyConfig = $heyLoyaltyConfig;
-        $this->heyLoyaltyApi = $heyLoyaltyApi;
-        $this->customerRepository = $customerRepository;
     }
 
     public function afterSubscribe(

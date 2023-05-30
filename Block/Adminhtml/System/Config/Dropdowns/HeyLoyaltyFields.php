@@ -44,24 +44,7 @@ class HeyLoyaltyFields extends AbstractSelect
             [
                 'label' => 'Fields in list',
                 'value' => $fields
-            ],
-            /*[
-                'label' => 'HeyLoyalty Fixed Fields',
-                'value' => [
-                    'firstname' => 'First Name',
-                    'lastname' => 'Last Name',
-                    'email' => 'Email',
-                    'mobile' => 'Mobile',
-                    'sex' => 'Sex',
-                    'birthdate' => 'Birthdate',
-                    'address' => 'Address',
-                    'postalcode' => 'Postal Code',
-                    'city' => 'City',
-                    'Country' => 'Country',
-                    'Password' => 'Password',
-                    'Reference' => 'Reference'
-                ]
-            ]*/
+            ]
         ];
     }
 }

@@ -19,6 +19,4 @@ class Tracking extends Template
     {
         parent::__construct($context, $data);
     }
-
-
 }

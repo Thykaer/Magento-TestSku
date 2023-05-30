@@ -22,9 +22,6 @@ class MarkForExport extends Action implements HttpGetActionInterface
         parent::__construct($context);
     }
 
-    /**
-     * Execute action based on request and return result
-     */
     public function execute()
     {
         try {

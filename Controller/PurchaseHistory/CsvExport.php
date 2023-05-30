@@ -24,14 +24,7 @@ class CsvExport implements HttpGetActionInterface
         public \Magento\Framework\App\CacheInterface $cache
     ) {
     }
-
-    /**
-     * Create CSV export file from table and return it
-     *
-     * @return ResponseInterface
-     * @throws FileSystemException
-     * @throws Exception
-     */
+    
     public function execute(): ResponseInterface
     {
         $securityKeyParam = $this->request->getParam('security_key');

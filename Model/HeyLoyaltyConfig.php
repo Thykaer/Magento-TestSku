@@ -21,10 +21,6 @@ class HeyLoyaltyConfig implements HeyLoyaltyConfigInterface
     public const CONFIG_PURCHASE_HISTORY_ACTIVATE = 'heyloyalty/purchase_history/activate';
     public const CONFIG_PURCHASE_HISTORY_ERROR_EMAIL = 'heyloyalty/purchase_history/error_email';
 
-
-    /**
-     * @param ScopeConfigInterface $scopeConfig
-     */
     public function __construct(
         public ScopeConfigInterface $scopeConfig,
         public Json $json,
@@ -35,11 +31,6 @@ class HeyLoyaltyConfig implements HeyLoyaltyConfigInterface
     ) {
     }
 
-    /**
-     * Get if module is enabled
-     *
-     * @return bool
-     */
     public function isEnabled(): bool
     {
         return $this->scopeConfig->getValue(
@@ -48,11 +39,6 @@ class HeyLoyaltyConfig implements HeyLoyaltyConfigInterface
         ) === '1';
     }
 
-    /**
-     * Get HeyLoyalty API key
-     *
-     * @return string
-     */
     public function getApiKey(): string
     {
         return $this->scopeConfig->getValue(
@@ -61,11 +47,6 @@ class HeyLoyaltyConfig implements HeyLoyaltyConfigInterface
         ) ?? '';
     }
 
-    /**
-     * Get HeyLoyalty API secret
-     *
-     * @return string
-     */
     public function getApiSecret(): string
     {
         return $this->scopeConfig->getValue(
@@ -74,11 +55,6 @@ class HeyLoyaltyConfig implements HeyLoyaltyConfigInterface
         ) ?? '';
     }
 
-    /**
-     * Get if tracking is activated
-     *
-     * @return bool
-     */
     public function getIsTrackingActivated(): bool
     {
         return $this->scopeConfig->getValue(
@@ -87,11 +63,6 @@ class HeyLoyaltyConfig implements HeyLoyaltyConfigInterface
         ) === '1';
     }
 
-    /**
-     * Get list chosen in config
-     *
-     * @return string
-     */
     public function getList(): string
     {
         return $this->scopeConfig->getValue(
@@ -100,11 +71,6 @@ class HeyLoyaltyConfig implements HeyLoyaltyConfigInterface
         ) ?? '';
     }
 
-    /**
-     * Get HeyLoyalty field mapping
-     *
-     * @return array
-     */
     public function getMappings(): array
     {
         try {
@@ -201,11 +167,6 @@ class HeyLoyaltyConfig implements HeyLoyaltyConfigInterface
         return $value;
     }
 
-    /**
-     * Get HeyLoyalty tracking id
-     *
-     * @return string
-     */
     public function getTrackingId(): string
     {
         return $this->scopeConfig->getValue(
@@ -214,11 +175,6 @@ class HeyLoyaltyConfig implements HeyLoyaltyConfigInterface
         ) ?? '';
     }
 
-    /**
-     * Get HeyLoyalty session time
-     *
-     * @return string
-     */
     public function getSessionTime(): string
     {
         return $this->scopeConfig->getValue(
@@ -227,11 +183,6 @@ class HeyLoyaltyConfig implements HeyLoyaltyConfigInterface
         ) ?? '';
     }
 
-    /**
-     * Get if purchase history export is activated
-     *
-     * @return bool
-     */
     public function getIsPurchaseHistoryActivated(): bool
     {
         return $this->scopeConfig->getValue(

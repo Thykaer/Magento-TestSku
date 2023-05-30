@@ -7,10 +7,6 @@ use Wexo\HeyLoyalty\Api\HeyLoyaltyApiInterface;
 
 class HeyLoyaltyList implements OptionSourceInterface
 {
-
-    /**
-     * @param HeyLoyaltyApiInterface $api
-     */
     public function __construct(
         public HeyLoyaltyApiInterface $api
     ) {
