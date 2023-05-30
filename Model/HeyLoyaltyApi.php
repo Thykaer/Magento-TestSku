@@ -15,7 +15,9 @@ class HeyLoyaltyApi implements HeyLoyaltyApiInterface
      */
     public function __construct(
         public HeyLoyaltyConfigInterface $config,
-        public HeyLoyaltyClientInterface $client
+        public HeyLoyaltyClientInterface $client,
+        public \Magento\Framework\App\ResourceConnection $connection,
+        public \Magento\Framework\App\CacheInterface $cache
     ) {
     }
 
@@ -45,7 +47,7 @@ class HeyLoyaltyApi implements HeyLoyaltyApiInterface
      * @param int $id
      * @return array
      */
-    public function getList(int $id): array
+    public function getList(string $id): array
     {
         return $this->client->fetchList($id);
     }
@@ -70,24 +72,107 @@ class HeyLoyaltyApi implements HeyLoyaltyApiInterface
         return $this->config->getTrackingId();
     }
 
-    /**
-     * Export purchase history through client
-     *
-     * @param array $fields
-     * @param string $dateFormat
-     * @param bool $skipHeaderLine
-     * @param string $sendErrorsTo
-     * @param string $delimiter
-     * @return array
-     * @throws NoSuchEntityException
-     */
     public function exportPurchaseHistory(
-        array $fields = ['email'], // Which fields the import file contains
-        string $dateFormat = 'Y-m-d H:i:s', // Date format for all dates in import file
-        bool $skipHeaderLine = true, // Set to false if import file has header line (skip first line)
-        string $sendErrorsTo = 'mkk@wexo.dk', // Email to send errors to
-        string $delimiter = ',' // Which character to separate columns by. Any combo of , ; | :
-    ): array {
-        return $this->client->exportPurchaseHistory($fields, $dateFormat, $skipHeaderLine, $sendErrorsTo, $delimiter);
+        $csvFileUrl,
+        $fields = [
+            'member_email',
+            'product_id',
+            'variation_type',
+            'variation_id',
+            'product_name',
+            'product_price',
+            'product_url',
+            'original_price',
+            'discount',
+            'description',
+            'currency',
+            'event_type',
+            'amount'
+        ]
+    ) {
+        $trackingId = $this->config->getTrackingId();
+        $errorEmail = $this->config->getPurchaseHistoryErrorEmail();
+        return $this->client->exportPurchaseHistory($csvFileUrl, $trackingId, $fields, $errorEmail);
+    }
+
+    public function generatePurchaseHistorySecurityKey(): string
+    {
+        return md5("HEYLOYALTY_" . date("Y-m-d"));
+    }
+
+
+    public function generatePurchaseHistory($storeId)
+    {
+        $cacheKey = "heyloyalty_purchase_history_{$storeId}";
+        $cacheData = $this->cache->load($cacheKey);
+        if ($cacheData) {
+            return $cacheData;
+        }
+        $connection = $this->connection->getConnection();
+        $query = '
+select
+    so.customer_email as member_email,
+    IFNULL(
+        (select sku from catalog_product_entity where entity_id = (select product_id from sales_order_item where item_id = soi.parent_item_id)),
+        soi.sku
+    ) as product_id,
+    IF(
+        ISNULL(soi.parent_item_id),
+        "",
+        soi.name
+    ) as variation_type,
+    IF(
+        ISNULL(soi.parent_item_id),
+        "",
+        soi.sku
+    ) as variation_id,
+    IFNULL(
+        (select name from sales_order_item where item_id=soi.parent_item_id),
+        soi.name
+    ) as product_name,
+    soi.price as product_price,
+    "" as product_url,
+    soi.original_price as original_price,
+    soi.discount_amount as discount,
+    soi.description as description,
+    so.order_currency_code as currency,
+    "bought" as event_type,
+    soi.qty_ordered as amount
+from sales_order as so
+left join sales_order_item as soi on so.entity_id = soi.order_id
+where
+    soi.product_type != "configurable"
+    and
+    so.created_at > DATE_SUB(NOW(),INTERVAL 2 YEAR)
+    and 
+    so.store_id = :store_id
+order by so.customer_id;
+';
+
+        $bind = [
+            'store_id' => $storeId
+        ];
+        $data = $connection->fetchAll($query, $bind);
+        $csv = [];
+        if (!empty($data)) {
+            $headers = join(',', array_keys($data[0]));
+            $csv[] = $headers;
+            foreach ($data as $row) {
+                $csv[] = join(',', array_values($row));
+            }
+        }
+        $output = join(PHP_EOL, $csv);
+        $this->cache->save($output, $cacheKey, ['cms_block'], 3600);
+        return $output;
+    }
+
+    public function createListMember(string $listId, array $fields = []): array
+    {
+        return $this->client->createListMember($listId, $fields);
+    }
+
+    public function deleteListMemberByEmail(string $listId, string $email): array
+    {
+        return $this->client->deleteListMemberByEmail($listId, $email);
     }
 }

@@ -15,6 +15,7 @@ use Wexo\HeyLoyalty\Api\HeyLoyaltyConfigInterface;
 class HeyLoyaltyClient implements HeyLoyaltyClientInterface
 {
     public const BASE_URI = 'https://api.heyloyalty.com/loyalty/v1/';
+    public const BASE_URI_V2 = 'https://api.heyloyalty.com/loyalty/v2/';
     public const BI_URI = 'https://bi.heyloyalty.com/api/';
     public const EXPORT_CSV_URL = 'wexo_heyloyalty/purchasehistory/csvexport';
 
@@ -47,10 +48,10 @@ class HeyLoyaltyClient implements HeyLoyaltyClientInterface
     /**
      * Fetch a single list from HeyLoyalty API
      *
-     * @param int $listId
+     * @param string $listId
      * @return array
      */
-    public function fetchList(int $listId): array
+    public function fetchList(string $listId): array
     {
         return $this->vOneRequest("lists/{$listId}");
     }
@@ -214,6 +215,14 @@ class HeyLoyaltyClient implements HeyLoyaltyClientInterface
         return $this->vOneRequest("lists/{$listId}/members/{$memberId}", 'DELETE');
     }
 
+    public function deleteListMemberByEmail(int $listId, string $email): array
+    {
+        return $this->request(self::BASE_URI_V2, "lists/members/byfield", 'DELETE', [
+            "field" => "email",
+            "value" => $email,
+            "lists" => [$listId]
+        ]);
+    }
     /**
      * Move members to another list
      *
@@ -446,21 +455,23 @@ class HeyLoyaltyClient implements HeyLoyaltyClientInterface
      * @throws NoSuchEntityException
      */
     public function exportPurchaseHistory(
-        array $fields = ['email'], // Which fields the import file contains
-        string $dateFormat = 'Y-m-d H:i:s', // Date format for all dates in import file
-        bool $skipHeaderLine = true, // Set to false if import file has header line (skip first line)
-        string $sendErrorsTo = 'mkk@wexo.dk', // Email to send errors to
-        string $delimiter = ',' // Which character to separate columns by. Any combo of , ; | :
+        string $file,
+        string $trackingId,
+        array $fields = [],
+        string $sendErrorsTo = '',
+        string $dateFormat = 'Y-m-d H:i:s',
+        bool $skipHeaderLine = false,
+        string $delimiter = ',',
     ): array {
         $payload = [
-            'file' => $this->storeManager->getStore()?->getBaseUrl(self::EXPORT_CSV_URL),
-            'fields_selected' => $fields,
+            'file' => $file,
             'date_format' => $dateFormat,
             'skip_header_line' => $skipHeaderLine,
             'sendErrorsTo' => $sendErrorsTo,
-            'delimiter' => $delimiter
+            'delimiter' => $delimiter,
+            'fields_selected' => $fields,
         ];
-        return $this->biRequest("booking/import/{$this->config->getTrackingId()}", 'POST', $payload, true);
+        return $this->request("https://bi.heyloyalty.com/","api/booking/import/{$trackingId}", 'POST', $payload);
     }
 
     /**
@@ -535,12 +546,26 @@ class HeyLoyaltyClient implements HeyLoyaltyClientInterface
             $options[$type] = $payload;
         }
         try {
+            $this->logger->debug('\Wexo\HeyLoyalty\Model\HeyLoyaltyClient::request - Request', [
+                'host' => $host,
+                'endpoint' => $endpoint,
+                'method' => $method,
+                'options' => $options
+            ]);
             $response = $this->client->request(
                 $method,
                 $host . $endpoint,
                 $options
             );
-            return $this->json->unserialize($response->getBody()->getContents());
+            $responseJson = $this->json->unserialize($response->getBody()->getContents());
+            $this->logger->debug('\Wexo\HeyLoyalty\Model\HeyLoyaltyClient::request - Response', [
+                'host' => $host,
+                'endpoint' => $endpoint,
+                'method' => $method,
+                'payload' => $payload,
+                'response' => $responseJson
+            ]);
+            return $responseJson;
         } catch (ClientException $e) {
             $response = $e?->getResponse();
             $this->logger->error('\Wexo\HeyLoyalty\Model\HeyLoyaltyClient::request Error',[

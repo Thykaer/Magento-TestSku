@@ -7,24 +7,11 @@ use Wexo\HeyLoyalty\Block\Adminhtml\System\Config\ExportButton;
 /** @var Escaper $escaper */
 ?>
 <div class="heyloyalty_export_container">
-    <button id="<?= $escaper->escapeHtml($block->getId()) ?>" style="width:100px; height:35px">
+    <a id="<?= $escaper->escapeHtml($block->getId()) ?>" href="<?= $escaper->escapeHtml($block->getControllerURL()) ?>" class="action-add" target="_heyloyalty_csv_export">
         <span><?= $escaper->escapeHtml($block->getLabel()) ?></span>
-    </button>
+    </a>
+    <br>
+    <a id="<?= $escaper->escapeHtml($block->getId()) ?>_trigger" href="<?= $escaper->escapeHtml($block->getAdminControllerURL()) ?>" class="action-add">
+        <span><?= __('Send to HeyLoyalty') ?></span>
+    </a>
 </div>
-
-<script>
-    require([
-        'jquery'
-    ], function ($) {
-        $('#heyloyalty_export_button').click(() => {
-            debugger;
-            $.ajax({
-                url: '<?= $escaper->escapeHtml($block->getAjaxUrl()) ?>',
-                type: 'GET',
-                error: function (xhr, status, errorThrown) {
-                    console.log(errorThrown);
-                }
-            });
-        });
-    });
-</script>

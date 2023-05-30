@@ -42,9 +42,17 @@ interface HeyLoyaltyConfigInterface
     /**
      * Get HeyLoyalty field mapping
      *
-     * @return string
+     * @return array
      */
-    public function getMapping(): string;
+    public function getMappings(): array;
+
+    /**
+     * Get HeyLoyalty field mapping and map them to customer data
+     *
+     * @param $customer
+     * @return array
+     */
+    public function mapFields($customer = null): array;
 
     /**
      * Get HeyLoyalty tracking id
@@ -59,4 +67,7 @@ interface HeyLoyaltyConfigInterface
      * @return string
      */
     public function getSessionTime(): string;
+
+    public function getIsPurchaseHistoryActivated(): bool;
+    public function getPurchaseHistoryErrorEmail(): string;
 }

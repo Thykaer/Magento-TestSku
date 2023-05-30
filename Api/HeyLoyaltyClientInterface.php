@@ -16,10 +16,10 @@ interface HeyLoyaltyClientInterface
     /**
      * Fetch a single list from HeyLoyalty API
      *
-     * @param int $listId
+     * @param string $listId
      * @return array
      */
-    public function fetchList(int $listId): array;
+    public function fetchList(string $listId): array;
 
     /**
      * Create a list. Refer to HeyLoyalty API for different kinds of fields
@@ -133,6 +133,15 @@ interface HeyLoyaltyClientInterface
      * @return array
      */
     public function deleteListMember(int $listId, string $memberId): array;
+
+    /**
+     * Delete list member by email
+     *
+     * @param integer $listId
+     * @param string $email
+     * @return array
+     */
+    public function deleteListMemberByEmail(int $listId, string $email): array;
 
     /**
      * Move members to another list
@@ -304,11 +313,13 @@ interface HeyLoyaltyClientInterface
      * @throws NoSuchEntityException
      */
     public function exportPurchaseHistory(
-        array $fields = ['email'], // Which fields the import file contains
-        string $dateFormat = 'Y-m-d H:i:s', // Date format for all dates in import file
-        bool $skipHeaderLine = true, // Set to false if import file has header line (skip first line)
-        string $sendErrorsTo = 'mkk@wexo.dk', // Email to send errors to
-        string $delimiter = ',' // Which character to separate columns by. Any combo of , ; | :
+        string $file,
+        string $trackingId,
+        array $fields = [],
+        string $sendErrorsTo = '',
+        string $dateFormat = 'Y-m-d H:i:s',
+        bool $skipHeaderLine = false,
+        string $delimiter = ',',
     ): array;
 
     /**

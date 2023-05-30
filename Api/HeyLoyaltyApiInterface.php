@@ -15,10 +15,10 @@ interface HeyLoyaltyApiInterface
     /**
      * Get a list from client
      *
-     * @param int $id
+     * @param string $id
      * @return array
      */
-    public function getList(int $id): array;
+    public function getList(string $id): array;
 
     /**
      * Get from config if tracking is activated
@@ -33,4 +33,20 @@ interface HeyLoyaltyApiInterface
      * @return string
      */
     public function getTrackingId(): string;
+
+    public function exportPurchaseHistory($csvFileUrl);
+    public function generatePurchaseHistory($storeId);
+    public function generatePurchaseHistorySecurityKey(): string;
+
+
+    /**
+     * Create a list member in Heyloyalty
+     *
+     * @param string $listId
+     * @param array $fields
+     * @return array
+     */
+    public function createListMember(string $listId, array $fields = []): array;
+
+    public function deleteListMemberByEmail(string $listId, string $email): array;
 }
