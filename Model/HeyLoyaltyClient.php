@@ -471,7 +471,6 @@ class HeyLoyaltyClient implements HeyLoyaltyClientInterface
             'delimiter' => $delimiter,
             'fields_selected' => $fields,
         ];
-        dump($payload);
         return $this->request("https://bi.heyloyalty.com/","api/booking/import/{$trackingId}", 'POST', $payload);
     }
 
@@ -569,13 +568,11 @@ class HeyLoyaltyClient implements HeyLoyaltyClientInterface
             return $responseJson;
         } catch (ClientException $e) {
             $response = $e?->getResponse();
-            dd($e);
             $this->logger->error('\Wexo\HeyLoyalty\Model\HeyLoyaltyClient::request Error',[
                 'message' => $e->getMessage(),
                 'body' => $response?->getBody()?->getContents()
             ]);
         } catch (Throwable $t) {
-            dd($t);
             $this->logger->error('\Wexo\HeyLoyalty\Model\HeyLoyaltyClient::request Error',[
                 'message' => $t->getMessage()
             ]);
