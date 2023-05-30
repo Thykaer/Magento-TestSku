@@ -10,7 +10,7 @@ use Wexo\HeyLoyalty\Block\Adminhtml\System\Config\AbstractSelect;
 class HeyLoyaltyFields extends AbstractSelect
 {
     public function __construct(
-        Context $context,
+        public Context $context,
         public HeyLoyaltyConfigInterface $config,
         public HeyLoyaltyApiInterface $api,
         array $data = []
