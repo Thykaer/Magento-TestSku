@@ -80,6 +80,11 @@ class Tracking implements ArgumentInterface
         return $this->request->getFullActionName() === 'catalog_category_view';
     }
 
+    public function isSuccessPage(): bool
+    {
+        return $this->request->getFullActionName() === 'checkout_onepage_success';
+    }
+
     public function getCurrentProduct()
     {
         return $this->_coreRegistry->registry('current_product');
