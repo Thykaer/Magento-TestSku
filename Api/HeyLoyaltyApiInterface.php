@@ -34,7 +34,7 @@ interface HeyLoyaltyApiInterface
      */
     public function getTrackingId(): string;
 
-    public function exportPurchaseHistory($csvFileUrl);
+    public function exportPurchaseHistory($csvUrl);
     public function generatePurchaseHistory($storeId);
     public function generatePurchaseHistorySecurityKey(): string;
 

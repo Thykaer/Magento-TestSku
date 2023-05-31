@@ -1,23 +1,15 @@
+<?php $viewModel = $block->getViewModel(); ?>
+<?php if ($viewModel->getIsTrackingActivated()) : ?>
+    
 <?php
-
-use Magento\Framework\Escaper;
-use Wexo\HeyLoyalty\Block\Tracking as TrackingBlock;
-
-/** @var TrackingBlock $block */
-/** @var Escaper $escaper */
-$viewModel = $block->getViewModel();
-$apiKey = $viewModel->getApiKey();
-$sessionTime = $viewModel->getSessionTime();
-$trackingId = $viewModel->getTrackingId();
-$trackingActivated = $viewModel->getIsTrackingActivated();
-
-$product = $viewModel->getCurrentProduct();
-$category = $viewModel->getCurrentCategory();
-$quoteId = $viewModel->getQuoteId();
-
-$email = $viewModel->getEmail();
+    $apiKey = $viewModel->getApiKey();
+    $sessionTime = $viewModel->getSessionTime();
+    $trackingId = $viewModel->getTrackingId();
+    $product = $viewModel->getCurrentProduct();
+    $category = $viewModel->getCurrentCategory();
+    $quoteId = $viewModel->getQuoteId();
+    $email = $viewModel->getEmail();
 ?>
-<?php if ($trackingActivated) : ?>
     <script type="text/javascript">
         let BiTrackingLoaded = function(BiTracking) {
             window.hlt = BiTracking;

@@ -43,7 +43,7 @@ class HeyLoyaltyApi implements HeyLoyaltyApiInterface
     }
 
     public function exportPurchaseHistory(
-        $csvFileUrl,
+        $csvUrl,
         $fields = [
             'member_email',
             'product_id',
@@ -62,7 +62,7 @@ class HeyLoyaltyApi implements HeyLoyaltyApiInterface
     ) {
         $trackingId = $this->config->getTrackingId();
         $errorEmail = $this->config->getPurchaseHistoryErrorEmail();
-        return $this->client->exportPurchaseHistory($csvFileUrl, $trackingId, $fields, $errorEmail);
+        return $this->client->exportPurchaseHistory($csvUrl, $trackingId, $fields, $errorEmail);
     }
 
     public function generatePurchaseHistorySecurityKey(): string

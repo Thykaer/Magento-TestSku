@@ -261,7 +261,7 @@ class HeyLoyaltyClient implements HeyLoyaltyClientInterface
     }
 
     public function exportPurchaseHistory(
-        string $file,
+        string $csvUrl,
         string $trackingId,
         array $fields = [],
         string $sendErrorsTo = '',
@@ -270,14 +270,35 @@ class HeyLoyaltyClient implements HeyLoyaltyClientInterface
         string $delimiter = ',',
     ): array {
         $payload = [
-            'file' => $file,
-            'date_format' => $dateFormat,
-            'skip_header_line' => $skipHeaderLine,
-            'sendErrorsTo' => $sendErrorsTo,
-            'delimiter' => $delimiter,
-            'fields_selected' => $fields,
+            [
+                'name' => 'file',
+                'contents' => \GuzzleHttp\Psr7\Utils::tryFopen($csvUrl,'r'),
+                'filename' => 'purchase_history.csv'
+            ],
+            [
+                'name' => 'date_format',
+                'contents' => $dateFormat
+            ],
+            [
+                'name' => 'skip_header_line',
+                'contents' => $skipHeaderLine
+            ],
+            [
+                'name' => 'send_errors_to',
+                'contents' => $sendErrorsTo
+            ],
+            [
+                'name' => 'delimiter',
+                'contents' => $delimiter
+            ]
         ];
-        return $this->request("https://bi.heyloyalty.com/","api/booking/import/{$trackingId}", 'POST', $payload);
+        foreach($fields as $field){
+            $payload[] = [
+                'name' => 'fields_selected[]',
+                'contents' => $field
+            ];
+        }
+        return $this->request("https://bi.heyloyalty.com/","api/transaction/import/{$trackingId}", 'POST', $payload, true);
     }
 
     public function vOneRequest(
@@ -307,11 +328,12 @@ class HeyLoyaltyClient implements HeyLoyaltyClientInterface
     ): array {
         $requestTimestamp = gmdate("D, d M Y H:i:s") . ' GMT';
         $requestSignature = base64_encode(hash_hmac('sha256', $requestTimestamp, $this->config->getApiSecret()));
+        $contentType = $multipart ? 'multipart/form-data' : 'application/json';
         $options = [
             'headers' => [
                 'X-Request-Timestamp' => $requestTimestamp,
                 'Accept' => 'application/json',
-                'Content-Type' => 'application/json'
+                'Content-Type' => $contentType
             ],
             'auth' => [
                 $this->config->getApiKey(),

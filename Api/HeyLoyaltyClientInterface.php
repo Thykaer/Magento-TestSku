@@ -301,19 +301,20 @@ interface HeyLoyaltyClientInterface
         string $customField5 = '',
     ): array;
 
+
     /**
-     * Import purchase history from csv file. Refer to HeyLoyalty API for different kind of fields
-     *
+     * Export purchase history to HeyLoyalty, input is a CSV
+     * @param string $csv
+     * @param string $trackingId
      * @param array $fields
+     * @param string $sendErrorsTo
      * @param string $dateFormat
      * @param bool $skipHeaderLine
-     * @param string $sendErrorsTo
      * @param string $delimiter
      * @return array
-     * @throws NoSuchEntityException
      */
     public function exportPurchaseHistory(
-        string $file,
+        string $csvUrl,
         string $trackingId,
         array $fields = [],
         string $sendErrorsTo = '',
