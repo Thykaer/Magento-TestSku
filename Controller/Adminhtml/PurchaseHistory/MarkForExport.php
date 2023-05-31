@@ -22,13 +22,10 @@ class MarkForExport extends Action implements HttpGetActionInterface
         parent::__construct($context);
     }
 
-    /**
-     * Execute action based on request and return result
-     */
     public function execute()
     {
         try {
-            $storeId = $this->getRequest()->getParam('store', false);
+            $storeId = $this->getRequest()->getParam('store', 1);
             $this->emulation->startEnvironmentEmulation($storeId, \Magento\Framework\App\Area::AREA_FRONTEND, true);
             $securityKey = $this->api->generatePurchaseHistorySecurityKey();
             $url = $this->url->getBaseUrl() . 'wexo_heyloyalty/purchasehistory/csvexport?security_key=' . $securityKey;
@@ -38,7 +35,6 @@ class MarkForExport extends Action implements HttpGetActionInterface
             $this->emulation->stopEnvironmentEmulation();
             $response = $this->api->exportPurchaseHistory($url);
             $this->logger->debug('HeyLoyalty :: Purchase History', [
-                'url' => $url,
                 'response' => $response
             ]);
             $this->messageManager->addSuccessMessage(__('Orders marked for export successfully.'));

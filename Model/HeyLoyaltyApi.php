@@ -9,10 +9,6 @@ use Wexo\HeyLoyalty\Api\HeyLoyaltyConfigInterface;
 
 class HeyLoyaltyApi implements HeyLoyaltyApiInterface
 {
-    /**
-     * @param HeyLoyaltyConfigInterface $config
-     * @param HeyLoyaltyClientInterface $client
-     */
     public function __construct(
         public HeyLoyaltyConfigInterface $config,
         public HeyLoyaltyClientInterface $client,
@@ -21,59 +17,33 @@ class HeyLoyaltyApi implements HeyLoyaltyApiInterface
     ) {
     }
 
-    /**
-     * Get if module is enabled
-     *
-     * @return bool
-     */
     public function isEnabled(): bool
     {
         return $this->config->isEnabled();
     }
 
-    /**
-     * Get lists from client
-     *
-     * @return array
-     */
     public function getLists(): array
     {
         return $this->client->fetchLists();
     }
 
-    /**
-     * Get a list from client
-     *
-     * @param int $id
-     * @return array
-     */
     public function getList(string $id): array
     {
         return $this->client->fetchList($id);
     }
 
-    /**
-     * Get from config if tracking is activated
-     *
-     * @return bool
-     */
     public function getIsTrackingActivated(): bool
     {
         return $this->config->getIsTrackingActivated();
     }
 
-    /**
-     * Get tracking id from config
-     *
-     * @return string
-     */
     public function getTrackingId(): string
     {
         return $this->config->getTrackingId();
     }
 
     public function exportPurchaseHistory(
-        $csvFileUrl,
+        $csvUrl,
         $fields = [
             'member_email',
             'product_id',
@@ -92,7 +62,7 @@ class HeyLoyaltyApi implements HeyLoyaltyApiInterface
     ) {
         $trackingId = $this->config->getTrackingId();
         $errorEmail = $this->config->getPurchaseHistoryErrorEmail();
-        return $this->client->exportPurchaseHistory($csvFileUrl, $trackingId, $fields, $errorEmail);
+        return $this->client->exportPurchaseHistory($csvUrl, $trackingId, $fields, $errorEmail);
     }
 
     public function generatePurchaseHistorySecurityKey(): string

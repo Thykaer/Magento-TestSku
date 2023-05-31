@@ -10,7 +10,7 @@ use Wexo\HeyLoyalty\Block\Adminhtml\System\Config\AbstractSelect;
 class HeyLoyaltyFields extends AbstractSelect
 {
     public function __construct(
-        Context $context,
+        public Context $context,
         public HeyLoyaltyConfigInterface $config,
         public HeyLoyaltyApiInterface $api,
         array $data = []
@@ -44,24 +44,7 @@ class HeyLoyaltyFields extends AbstractSelect
             [
                 'label' => 'Fields in list',
                 'value' => $fields
-            ],
-            /*[
-                'label' => 'HeyLoyalty Fixed Fields',
-                'value' => [
-                    'firstname' => 'First Name',
-                    'lastname' => 'Last Name',
-                    'email' => 'Email',
-                    'mobile' => 'Mobile',
-                    'sex' => 'Sex',
-                    'birthdate' => 'Birthdate',
-                    'address' => 'Address',
-                    'postalcode' => 'Postal Code',
-                    'city' => 'City',
-                    'Country' => 'Country',
-                    'Password' => 'Password',
-                    'Reference' => 'Reference'
-                ]
-            ]*/
+            ]
         ];
     }
 }

@@ -13,12 +13,10 @@ class Tracking extends Template
         public Registry        $_coreRegistry,
         public Session         $customerSession,
         public CheckoutSession $checkoutSession,
-        Template\Context       $context,
+        public Template\Context       $context,
         array                  $data = []
     )
     {
         parent::__construct($context, $data);
     }
-
-
 }

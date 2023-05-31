@@ -62,38 +62,8 @@ class AbstractFrontendModel extends AbstractFieldArray
             $this->selectOptions = $this->getLayout()->createBlock(
                 Select::class,
                 '',
-            // ['data' => ['is_render_to_js_template' => true]]
             );
         }
         return $this->selectOptions;
-    }
-
-    /**
-     * Get element HTML
-     *
-     * @param AbstractElement $element
-     * @return string
-     */
-    protected function _getElementHtml(AbstractElement $element)
-    {
-        $html = parent::_getElementHtml($element);
-
-        // $script = '<script type="text/javascript">
-        //         require(["jquery", "jquery/ui", "mage/calendar"], function (jq) {
-        //             jq(function(){
-        //                 function bindDatePicker() {
-        //                     setTimeout(function() {
-        //                         jq(".daterecuring").datepicker( { dateFormat: "mm/dd/yy" } );
-        //                     }, 50);
-        //                 }
-        //                 bindDatePicker();
-        //                 jq("button.action-add").on("click", function(e) {
-        //                     bindDatePicker();
-        //                 });
-        //             });
-        //         });
-        //     </script>';
-        // $html .= $script;
-        return $html;
     }
 }
