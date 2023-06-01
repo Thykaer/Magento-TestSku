@@ -20,11 +20,13 @@ class HeyLoyaltyClient implements HeyLoyaltyClientInterface
     public const EXPORT_CSV_URL = 'wexo_heyloyalty/purchasehistory/csvexport';
 
     public function __construct(
-        public Client $client,
+        public \GuzzleHttp\Client $client,
         public HeyLoyaltyConfigInterface $config,
         public Json $json,
         public LoggerInterface $logger,
-        public StoreManager $storeManager
+        public StoreManager $storeManager,
+        public \Magento\Framework\Filesystem\DirectoryList $dir,
+        public \Magento\Framework\Filesystem $filesystem
     ) {
     }
 
@@ -269,11 +271,19 @@ class HeyLoyaltyClient implements HeyLoyaltyClientInterface
         bool $skipHeaderLine = false,
         string $delimiter = ',',
     ): array {
+
+        $tmpFile = $this->filesystem->getDirectoryWrite(\Magento\Framework\App\Filesystem\DirectoryList::TMP);
+        $content = $csvUrl;
+        $tmpFile->writeFile("test.csv",$content);
+
         $payload = [
             [
                 'name' => 'file',
-                'contents' => \GuzzleHttp\Psr7\Utils::tryFopen($csvUrl,'r'),
-                'filename' => 'purchase_history.csv'
+                'contents' => \GuzzleHttp\Psr7\Utils::tryfOpen($tmpFile->getAbsolutePath('test.csv'),'r'),
+                'filename' => $tmpFile->getAbsolutePath('test.csv'),
+                'headers' => [
+                    'Content-Type' => 'text/csv'
+                ]
             ],
             [
                 'name' => 'date_format',
