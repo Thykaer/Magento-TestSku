@@ -20,11 +20,13 @@ class HeyLoyaltyClient implements HeyLoyaltyClientInterface
     public const EXPORT_CSV_URL = 'wexo_heyloyalty/purchasehistory/csvexport';
 
     public function __construct(
-        public Client $client,
+        public \GuzzleHttp\Client $client,
         public HeyLoyaltyConfigInterface $config,
         public Json $json,
         public LoggerInterface $logger,
-        public StoreManager $storeManager
+        public StoreManager $storeManager,
+        public \Magento\Framework\Filesystem\DirectoryList $dir,
+        public \Magento\Framework\Filesystem $filesystem
     ) {
     }
 
@@ -140,8 +142,7 @@ class HeyLoyaltyClient implements HeyLoyaltyClientInterface
         string $action = 'copy', // Can be 'copy' or 'move'
         string $duplicatesField = 'both', // Can be 'email', 'mobile' or 'both'
         string $duplicatesAction = 'patch' // 'patch'=keep existing, 'update'=delete existing, 'skip'=skip duplicates
-    ): array
-    {
+    ): array {
         $payload = [
             'listId' => $targetListId,
             'handleDuplicates[field]' => $duplicatesField,
@@ -269,11 +270,25 @@ class HeyLoyaltyClient implements HeyLoyaltyClientInterface
         bool $skipHeaderLine = false,
         string $delimiter = ',',
     ): array {
+
+        // if development mode, use the local file instead of the URL
+        // Production might have constraints on file permissions, which is why we use a controller url
+        // Locally we cannot fetch from .localhost
+        if (!str_contains(substr($csvUrl, 0, 10), 'http')) {
+            $tmpFile = $this->filesystem->getDirectoryWrite(\Magento\Framework\App\Filesystem\DirectoryList::TMP);
+            $content = $csvUrl;
+            $tmpFile->writeFile("purchase_history.csv", $content);
+            $csvUrl = $tmpFile->getAbsolutePath('purchase_history.csv');
+        }
+
         $payload = [
             [
                 'name' => 'file',
-                'contents' => \GuzzleHttp\Psr7\Utils::tryFopen($csvUrl,'r'),
-                'filename' => 'purchase_history.csv'
+                'contents' => \GuzzleHttp\Psr7\Utils::tryfOpen($csvUrl, 'r'),
+                'filename' => 'purchase_history.csv',
+                'headers' => [
+                    'Content-Type' => 'text/csv'
+                ]
             ],
             [
                 'name' => 'date_format',
@@ -292,13 +307,18 @@ class HeyLoyaltyClient implements HeyLoyaltyClientInterface
                 'contents' => $delimiter
             ]
         ];
-        foreach($fields as $field){
+        foreach ($fields as $field) {
             $payload[] = [
                 'name' => 'fields_selected[]',
                 'contents' => $field
             ];
         }
-        return $this->request("https://bi.heyloyalty.com/","api/transaction/import/{$trackingId}", 'POST', $payload, true);
+
+        $response = $this->request("https://bi.heyloyalty.com/", "api/transaction/import/{$trackingId}", 'POST', $payload, true);
+        if (isset($response['status']) && $response['status'] !== 'error') {
+            return $response;
+        }
+        throw new \Exception($response['message']);
     }
 
     public function vOneRequest(
@@ -328,13 +348,15 @@ class HeyLoyaltyClient implements HeyLoyaltyClientInterface
     ): array {
         $requestTimestamp = gmdate("D, d M Y H:i:s") . ' GMT';
         $requestSignature = base64_encode(hash_hmac('sha256', $requestTimestamp, $this->config->getApiSecret()));
-        $contentType = $multipart ? 'multipart/form-data' : 'application/json';
+        $headers = [
+            'X-Request-Timestamp' => $requestTimestamp,
+            'Accept' => 'application/json',
+        ];
+        if (!$multipart) {
+            $headers['Content-Type'] = 'application/json';
+        }
         $options = [
-            'headers' => [
-                'X-Request-Timestamp' => $requestTimestamp,
-                'Accept' => 'application/json',
-                'Content-Type' => $contentType
-            ],
+            'headers' => $headers,
             'auth' => [
                 $this->config->getApiKey(),
                 $requestSignature
@@ -345,6 +367,7 @@ class HeyLoyaltyClient implements HeyLoyaltyClientInterface
             $type = $multipart ? 'multipart' : 'json';
             $options[$type] = $payload;
         }
+        $message = '';
         try {
             $this->logger->debug('\Wexo\HeyLoyalty\Model\HeyLoyaltyClient::request - Request', [
                 'host' => $host,
@@ -358,6 +381,7 @@ class HeyLoyaltyClient implements HeyLoyaltyClientInterface
                 $options
             );
             $responseJson = $this->json->unserialize($response->getBody()->getContents());
+
             $this->logger->debug('\Wexo\HeyLoyalty\Model\HeyLoyaltyClient::request - Response', [
                 'host' => $host,
                 'endpoint' => $endpoint,
@@ -365,19 +389,30 @@ class HeyLoyaltyClient implements HeyLoyaltyClientInterface
                 'payload' => $payload,
                 'response' => $responseJson
             ]);
+            if (!is_array($responseJson)) {
+                $responseJson = [
+                    'status' => 'success',
+                    'message' => $responseJson
+                ];
+            }
             return $responseJson;
         } catch (ClientException $e) {
             $response = $e?->getResponse();
-            $this->logger->error('\Wexo\HeyLoyalty\Model\HeyLoyaltyClient::request Error',[
+            $this->logger->error('\Wexo\HeyLoyalty\Model\HeyLoyaltyClient::request Error', [
                 'message' => $e->getMessage(),
                 'body' => $response?->getBody()?->getContents()
             ]);
+            $message = $e->getMessage();
         } catch (Throwable $t) {
-            $this->logger->error('\Wexo\HeyLoyalty\Model\HeyLoyaltyClient::request Error',[
+            $this->logger->error('\Wexo\HeyLoyalty\Model\HeyLoyaltyClient::request Error', [
                 'message' => $t->getMessage()
             ]);
+            $message = $t->getMessage();
         }
-        return [];
+        return [
+            'status' => 'error',
+            'message' => $message
+        ];
     }
 
     private function getNotEmptyArguments(array $args, int $shift): array
