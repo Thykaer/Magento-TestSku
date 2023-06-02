@@ -32,6 +32,10 @@ class MarkForExport extends Action implements HttpGetActionInterface
             if ($storeId) {
                 $url .= "&store_id=$storeId";
             }
+
+            if(str_contains($url, 'localhost')){
+                $url = $this->api->generatePurchaseHistory($storeId);
+            }
             $this->emulation->stopEnvironmentEmulation();
             $response = $this->api->exportPurchaseHistory($url);
             $this->logger->debug('HeyLoyalty :: Purchase History', [
