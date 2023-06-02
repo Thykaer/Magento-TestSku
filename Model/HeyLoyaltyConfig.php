@@ -3,7 +3,6 @@
 namespace Wexo\HeyLoyalty\Model;
 
 use InvalidArgumentException;
-use Magento\Store\Model\ScopeInterface;
 use Wexo\HeyLoyalty\Api\HeyLoyaltyConfigInterface;
 
 class HeyLoyaltyConfig implements HeyLoyaltyConfigInterface
@@ -33,7 +32,7 @@ class HeyLoyaltyConfig implements HeyLoyaltyConfigInterface
     {
         return $this->scopeConfig->getValue(
             self::CONFIG_ENABLED,
-            ScopeInterface::SCOPE_STORE
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
         ) === '1';
     }
 
@@ -41,7 +40,7 @@ class HeyLoyaltyConfig implements HeyLoyaltyConfigInterface
     {
         return $this->scopeConfig->getValue(
             self::CONFIG_API_KEY,
-            ScopeInterface::SCOPE_STORE
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
         ) ?? '';
     }
 
@@ -49,7 +48,7 @@ class HeyLoyaltyConfig implements HeyLoyaltyConfigInterface
     {
         return $this->scopeConfig->getValue(
             self::CONFIG_API_SECRET,
-            ScopeInterface::SCOPE_STORE
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
         ) ?? '';
     }
 
@@ -57,7 +56,7 @@ class HeyLoyaltyConfig implements HeyLoyaltyConfigInterface
     {
         return $this->scopeConfig->getValue(
             self::CONFIG_TRACKING_ACTIVATE,
-            ScopeInterface::SCOPE_STORE
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
         ) === '1';
     }
 
@@ -65,7 +64,7 @@ class HeyLoyaltyConfig implements HeyLoyaltyConfigInterface
     {
         return $this->scopeConfig->getValue(
             self::CONFIG_LIST,
-            ScopeInterface::SCOPE_STORE
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
         ) ?? '';
     }
 
@@ -74,7 +73,7 @@ class HeyLoyaltyConfig implements HeyLoyaltyConfigInterface
         try {
             return $this->json->unserialize($this->scopeConfig->getValue(
                 self::CONFIG_MAPPER,
-                ScopeInterface::SCOPE_STORE
+                \Magento\Store\Model\ScopeInterface::SCOPE_STORE
             )) ?? [];
         } catch (InvalidArgumentException $e) {
             return [];
@@ -169,7 +168,7 @@ class HeyLoyaltyConfig implements HeyLoyaltyConfigInterface
     {
         return $this->scopeConfig->getValue(
             self::CONFIG_TRACKING_ID,
-            ScopeInterface::SCOPE_STORE
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
         ) ?? '';
     }
 
@@ -177,7 +176,7 @@ class HeyLoyaltyConfig implements HeyLoyaltyConfigInterface
     {
         return $this->scopeConfig->getValue(
             self::CONFIG_SESSION_TIME,
-            ScopeInterface::SCOPE_STORE
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
         ) ?? '';
     }
 
@@ -185,7 +184,7 @@ class HeyLoyaltyConfig implements HeyLoyaltyConfigInterface
     {
         return $this->scopeConfig->getValue(
             self::CONFIG_PURCHASE_HISTORY_ACTIVATE,
-            ScopeInterface::SCOPE_STORE
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
         ) === '1';
     }
 
@@ -193,7 +192,7 @@ class HeyLoyaltyConfig implements HeyLoyaltyConfigInterface
     {
         return $this->scopeConfig->getValue(
             self::CONFIG_PURCHASE_HISTORY_ERROR_EMAIL,
-            ScopeInterface::SCOPE_STORE
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
         ) ?? '';
     }
 }
