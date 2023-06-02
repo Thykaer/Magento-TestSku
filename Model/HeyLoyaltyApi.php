@@ -62,7 +62,7 @@ class HeyLoyaltyApi implements HeyLoyaltyApiInterface
     ) {
         $trackingId = $this->config->getTrackingId();
         $errorEmail = $this->config->getPurchaseHistoryErrorEmail();
-        return $this->client->exportPurchaseHistory($this->generatePurchaseHistory(1), $trackingId, $fields, $errorEmail);
+        return $this->client->exportPurchaseHistory($csvUrl, $trackingId, $fields, $errorEmail);
     }
 
     public function generatePurchaseHistorySecurityKey(): string

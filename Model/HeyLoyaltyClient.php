@@ -271,16 +271,11 @@ class HeyLoyaltyClient implements HeyLoyaltyClientInterface
         bool $skipHeaderLine = false,
         string $delimiter = ',',
     ): array {
-
-        $tmpFile = $this->filesystem->getDirectoryWrite(\Magento\Framework\App\Filesystem\DirectoryList::TMP);
-        $content = $csvUrl;
-        $tmpFile->writeFile("test.csv",$content);
-
         $payload = [
             [
                 'name' => 'file',
-                'contents' => \GuzzleHttp\Psr7\Utils::tryfOpen($tmpFile->getAbsolutePath('test.csv'),'r'),
-                'filename' => $tmpFile->getAbsolutePath('test.csv'),
+                'contents' => \GuzzleHttp\Psr7\Utils::tryfOpen($csvUrl,'r'),
+                'filename' => 'purchase_history.csv',
                 'headers' => [
                     'Content-Type' => 'text/csv'
                 ]
@@ -308,7 +303,8 @@ class HeyLoyaltyClient implements HeyLoyaltyClientInterface
                 'contents' => $field
             ];
         }
-        return $this->request("https://bi.heyloyalty.com/","api/transaction/import/{$trackingId}", 'POST', $payload, true);
+
+        return [$this->request("https://bi.heyloyalty.com/","api/transaction/import/{$trackingId}", 'POST', $payload, true)];
     }
 
     public function vOneRequest(
@@ -338,13 +334,15 @@ class HeyLoyaltyClient implements HeyLoyaltyClientInterface
     ): array {
         $requestTimestamp = gmdate("D, d M Y H:i:s") . ' GMT';
         $requestSignature = base64_encode(hash_hmac('sha256', $requestTimestamp, $this->config->getApiSecret()));
-        $contentType = $multipart ? 'multipart/form-data' : 'application/json';
+        $headers = [
+            'X-Request-Timestamp' => $requestTimestamp,
+            'Accept' => 'application/json',
+        ];
+        if(!$multipart){
+            $headers['Content-Type'] = 'application/json';
+        }
         $options = [
-            'headers' => [
-                'X-Request-Timestamp' => $requestTimestamp,
-                'Accept' => 'application/json',
-                'Content-Type' => $contentType
-            ],
+            'headers' => $headers,
             'auth' => [
                 $this->config->getApiKey(),
                 $requestSignature
@@ -368,6 +366,7 @@ class HeyLoyaltyClient implements HeyLoyaltyClientInterface
                 $options
             );
             $responseJson = $this->json->unserialize($response->getBody()->getContents());
+            
             $this->logger->debug('\Wexo\HeyLoyalty\Model\HeyLoyaltyClient::request - Response', [
                 'host' => $host,
                 'endpoint' => $endpoint,
@@ -378,11 +377,13 @@ class HeyLoyaltyClient implements HeyLoyaltyClientInterface
             return $responseJson;
         } catch (ClientException $e) {
             $response = $e?->getResponse();
+            
             $this->logger->error('\Wexo\HeyLoyalty\Model\HeyLoyaltyClient::request Error',[
                 'message' => $e->getMessage(),
                 'body' => $response?->getBody()?->getContents()
             ]);
         } catch (Throwable $t) {
+            
             $this->logger->error('\Wexo\HeyLoyalty\Model\HeyLoyaltyClient::request Error',[
                 'message' => $t->getMessage()
             ]);
