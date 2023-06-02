@@ -3,6 +3,8 @@
     <module name="Wexo_HeyLoyalty" setup_version="1.0.0">
         <sequence>
             <module name="Magento_Newsletter"/>
+            <module name="Magento_Customer"/>
+            <module name="Magento_Store"/>
         </sequence>
     </module>
 </config>

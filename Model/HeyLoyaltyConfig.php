@@ -3,8 +3,6 @@
 namespace Wexo\HeyLoyalty\Model;
 
 use InvalidArgumentException;
-use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Framework\Serialize\Serializer\Json;
 use Magento\Store\Model\ScopeInterface;
 use Wexo\HeyLoyalty\Api\HeyLoyaltyConfigInterface;
 
@@ -22,10 +20,10 @@ class HeyLoyaltyConfig implements HeyLoyaltyConfigInterface
     public const CONFIG_PURCHASE_HISTORY_ERROR_EMAIL = 'heyloyalty/purchase_history/error_email';
 
     public function __construct(
-        public ScopeConfigInterface $scopeConfig,
-        public Json $json,
+        public \Magento\Framework\Serialize\Serializer\Json $json,
         public \Magento\Store\Model\Information $storeInformation,
         public \Magento\Store\Model\StoreManagerInterface $storeManager,
+        public \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         public \Magento\Customer\Api\AddressRepositoryInterface $addressRepository,
         public \Psr\Log\LoggerInterface $logger
     ) {
