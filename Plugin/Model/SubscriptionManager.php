@@ -6,8 +6,8 @@ class SubscriptionManager
 {
     public function __construct(
         public \Psr\Log\LoggerInterface $logger,
-        public \Wexo\Heyloyalty\Api\HeyLoyaltyConfigInterface $heyLoyaltyConfig,
-        public \Wexo\Heyloyalty\Api\HeyLoyaltyApiInterface $heyLoyaltyApi,
+        public \Wexo\HeyLoyalty\Api\HeyLoyaltyApiInterface $heyLoyaltyApi,
+        public \Wexo\HeyLoyalty\Api\HeyLoyaltyConfigInterface $heyLoyaltyConfig,
         public \Magento\Customer\Api\CustomerRepositoryInterface $customerRepository
     ) {
     }
