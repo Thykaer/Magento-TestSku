@@ -148,19 +148,7 @@
         });
 
         function getAddedItems(oldArray, newArray) {
-            let diff = newArray.filter(item => !oldArray.some(oldItem => oldItem.product_id === item.product_id && oldItem.qty >= item.qty));
-            if (diff.length > 0) {
-                diff = diff.map((item) => {
-                    let oldItem = oldArray.find(old => old.product_id === item.product_id);
-                    oldQty = oldItem !== undefined ? oldItem.qty : 0;
-                    return {
-                        product_id: item.product_id,
-                        qty: item.qty - oldQty,
-                        product_sku: item.product_sku
-                    }
-                });
-            }
-            return diff;
+            return newArray.filter(item => !oldArray.some(oldItem => oldItem.product_id === item.product_id && oldItem.qty >= item.qty));
         }
 
         function getRemovedItems(oldArray, newArray) {
