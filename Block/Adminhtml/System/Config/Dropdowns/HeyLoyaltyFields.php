@@ -27,7 +27,7 @@ class HeyLoyaltyFields extends AbstractSelect
     {
         $fields = [];
         $list = $this->api->getList($this->config->getList());
-        if(empty($list)){
+        if(empty($list) || empty($list['fields'])){
             return [
                 [
                     'label' => 'Select a List to see fields',
