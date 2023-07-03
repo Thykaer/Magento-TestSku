@@ -45,10 +45,10 @@ class HeyLoyaltyApi implements HeyLoyaltyApiInterface
     public function exportPurchaseHistory(
         $csvUrl,
         $fields = [
-            'member_email',
+            'email',
             'product_id',
-            'variation_type',
-            'variation_id',
+            // 'variation_type',
+            // 'variation_id',
             'product_name',
             'product_price',
             'product_url',
@@ -80,44 +80,34 @@ class HeyLoyaltyApi implements HeyLoyaltyApiInterface
         }
         $connection = $this->connection->getConnection();
         $query = '
-select
-    so.customer_email as member_email,
-    IFNULL(
-        (select sku from catalog_product_entity where entity_id = (select product_id from sales_order_item where item_id = soi.parent_item_id)),
-        soi.sku
-    ) as product_id,
-    IF(
-        ISNULL(soi.parent_item_id),
-        "",
-        soi.name
-    ) as variation_type,
-    IF(
-        ISNULL(soi.parent_item_id),
-        "",
-        soi.sku
-    ) as variation_id,
-    IFNULL(
-        (select name from sales_order_item where item_id=soi.parent_item_id),
-        soi.name
-    ) as product_name,
-    soi.price as product_price,
-    "" as product_url,
-    soi.original_price as original_price,
-    soi.discount_amount as discount,
-    soi.description as description,
-    so.order_currency_code as currency,
-    "bought" as event_type,
-    soi.qty_ordered as amount
-from sales_order as so
-left join sales_order_item as soi on so.entity_id = soi.order_id
-where
-    soi.product_type != "configurable"
-    and
-    so.created_at > DATE_SUB(NOW(),INTERVAL 2 YEAR)
-    and 
-    so.store_id = :store_id
-order by so.customer_id;
-';
+            select
+                so.customer_email as email,
+                IFNULL(
+                    (select sku from catalog_product_entity where entity_id = (select product_id from sales_order_item where item_id = soi.parent_item_id)),
+                    soi.sku
+                ) as product_id,
+                IFNULL(
+                    (select name from sales_order_item where item_id=soi.parent_item_id),
+                    soi.name
+                ) as product_name,
+                soi.price as product_price,
+                "" as product_url,
+                soi.original_price as original_price,
+                soi.discount_amount as discount,
+                soi.description as description,
+                so.order_currency_code as currency,
+                "bought" as event_type,
+                soi.qty_ordered as amount
+            from sales_order as so
+            left join sales_order_item as soi on so.entity_id = soi.order_id
+            where
+                soi.product_type != "configurable"
+                and
+                so.created_at > DATE_SUB(NOW(),INTERVAL 2 YEAR)
+                and 
+                so.store_id = :store_id
+            order by so.customer_id;
+        ';
 
         $bind = [
             'store_id' => $storeId

@@ -299,7 +299,7 @@ class HeyLoyaltyClient implements HeyLoyaltyClientInterface
                 'contents' => $skipHeaderLine
             ],
             [
-                'name' => 'send_errors_to',
+                'name' => 'sendErrorsTo',
                 'contents' => $sendErrorsTo
             ],
             [
