@@ -1,94 +1,107 @@
 
-# Indstillinger:
+# HeyLoyalty Module
+
+## Settings
+
+#### General Settings
+
+On first setup no lists or mappings will be available. Once you have entered your `Api Key` and `Api Secret` (Hit the save button) your lists and fields will be available for editting
+
+![HeyLoyalty Configuration](./images/heyloyalty_config_1.png)
+
+#### Purchase History and Tracking
+
+If you want to provide HeyLoyalty with the last 2 years of orders you can use the `Send To HeyLoyalty` button to trigger an order import
+
+If you want to verify the data before you send it, you can click the first link (`Verify Purchase History CSV (Last 2 years)`) This will download a CSV file where you can verify the data before submitting it.
+
+![HeyLoyalty Configuration](./images/heyloyalty_config_2.png)
 
 
+## Developer Guide:
 
-- Enable/disable
-- Api Key + Secret ( evt. knap )
-- sessiontime
-- integrationId
-- Mapping
-	- Fetch fields from Heyloyalty
-	- Fetch fields from magento
-drag inspiration af: https://gitlab.wexo.io/wexo/maulund/-/blob/c561597a367c1333363943a1fcbd5c8ce12c9862/app/code/Maulund/Skuvault/Model/Config/Source/ChannelAccounts.php
-`toOptionArray` kan stå for at hente information fra externe ressourcer
+### Setup
+
+`php bin/magento setup:upgrade` is all that is required to install the module.
+
+The module has a few dependencies on internal magento modules:
+```xml
+<sequence>
+    <module name="Magento_Newsletter"/>
+    <module name="Magento_Customer"/>
+    <module name="Magento_Store"/>
+</sequence>
+```
+These are all required by magento by default
+
+### API, Client & Config
+
+The 3 main important files in this project are present in `HeyLoyalty/Model` folder
+
+- `HeyLoyaltyApi`
+- `HeyLoyaltyClient`
+- `HeyLoyaltyConfig`
+
+The `HeyLoyaltyApi` is a wrapper around the client and handles all Magento specific context and passes the data unto the client.
+`HeyLoyaltyClient` is a 1:1 mapping of the HeyLoyalty Api documentation, most of the methods in this class are not used in this method, but was made incase we needed access to them. You can see [HeyLoyalty Api Documentation](https://github.com/Heyloyalty/api/wiki) for available methods and required parameters
+
+The `HeyLoyaltyConfig` class is used to fetch all the configurations from magento, it provides an easy way to get the correct store settings.
+
+### Purchase History 
+
+Due to the many ways Magento can be configured and setup the decision to make a csv file was instead moved into a controller action. This means we can manipulate the contents at runtime and provide an up to date file at any given moment. 
+
+We also avoid running into issues with File permissions, some Magento installations have very strict file permissions schema preventing modules from creating files on the disk.
+
+At the settings page there are 2 links, one to download the file and one to trigger an import via HeyLoyalty Api.
+- HeyLoyalty/Controller/Adminhtml/PurchaseHistory/MarkForExport.php
+- HeyLoyalty/Controller/PurchaseHistory/CsvExport.php
+
+We have two controllers, one Admin and one Frontend
+The frontend controller needs to be supplied with a security key in order for it to return data (GDPR & Security reasons). A key can be generated using the `\Wexo\HeyLoyalty\Api::generatePurchaseHistorySecurityKey` method
+
+### Tracking
+
+Tracking is done via Frontend Layouts `view/frontend/layout/default.xml` here we create a Magento Block and in order to add HTML to the magento theme. Using the default.xml we are most likely to add it to the current theme. There are instances of custom modules overwriting the entire Magento theme causing this to not work.
+
+If a client happens to use one of those modules, they will need to manually attach the model
+
+It can be done by adding the following Block XML to a layout:
 
 ```xml
-<!-- https://gitlab.wexo.io/magento2-modules/approved/shipping/webshipper/-/blob/master/etc/adminhtml/system.xml -->
-<field id="sender_address"
-       translate="label"
-       sortOrder="20"
-       showInDefault="1"
-       showInWebsite="1"
-       showInStore="1">
-    <label>Sender Address Mapping</label>
-    <backend_model>Wexo\Webshipper\Block\Adminhtml\System\Config\SenderAddress\BackendModel</backend_model>
-    <frontend_model>Wexo\Webshipper\Block\Adminhtml\System\Config\SenderAddress\FrontendModel</frontend_model>
-    <comment><![CDATA[<a href='https://docs.webshipper.io/#shipping_addresses'>Webshipper Address Documentation</a>]]></comment>
-</field>
+<block class="Magento\Framework\View\Element\Template"
+        name="wexo_heyloyalty_script"
+        template="Wexo_HeyLoyalty::tracking_script.phtml">
+    <arguments>
+        <argument name="view_model" xsi:type="object">Wexo\HeyLoyalty\ViewModel\Tracking</argument>
+    </arguments>
+</block>
 ```
-	- Activate Tracking Script
-		- flag for cronjob/consumer
-		- activates script frontend based on settings
 
-# Forbindelse:
+The ViewModel is responsible to fetching the data made available to the template
 
-Opret Api Model til al kommunikation til HeyLoyalty
+`\Wexo\HeyLoyalty\ViewModel\Tracking`
 
-Gerne med interface til preferences overskrivelser ;) 
+Using the built in methods from Magento we can fetch relevant information and build our own context. This is relevant because HeyLoyalty has requirements for when specific events are triggered and what data is sent
 
-`Wexo/HeyLoyalty/Api/HeyLoyaltyApiInterface` => `Wexo/Heyloyalty/Model/HeyLoyaltyApi`
+All the tracking is handled in the `HeyLoyalty/view/frontend/templates/tracking_script.phtml` file. All the events and their parameters are taking from the documentation provided at [HeyCommerce Tracking Documentation](https://support.heyloyalty.com/hc/en-us/articles/360020072411-9-2-Dokumentation-Heycommerce-produkt-tracking)
 
-Hver metode i api'er skal gerne mappe op mod deres dokumentation med samme parametre, så kan vi lave wrapper metoder til lettere håndtering i magento
+The only special case we handle is when a user triggers the `add_to_cart` event
+This is event is by default handled via Knockout
 
-Api: https://github.com/Heyloyalty/api/wiki/Getting-started
-
-# Tracking Script:
-
-## Default Fields:
-
-- Firstname
-- lastname
-- Email
-- Mobile no.
-- Sex
-- Birthday
-- Address
-- Postalcode
-- City
-- Country
-
-## Custom Fields:
-- Customer ID (If necessary) 
-- Customer type (If necessary)
-- <fields from mapping>
-
-Implementere vist på alle sider undtagen purchase confirmation
-implementere addToBasket enten når man ligger noget i kurven eller når man går ind på kurven
-Implementere removeFromBasket når man fjerner et produkt fra kurven
-Implementere purchasedBasket når man kommer til purchase confirmation siden
+The specific code is this part. This adds a dependency on the Magento platform utilizing the built in Knockout (which is default).
 
 
-# Purchase History:
+```html
+<script>
+    require(['Magento_Customer/js/customer-data'], function(customerData) {
+        let cart = customerData.get('cart');
+        cart.subscribe(function() {
+            ...
+        })
+    });
+</script>
+```
+_HeyLoyalty/view/frontend/templates/tracking_script.phtml:116_
 
-Opret en Model klasse der indeholder metoder der kan bruges af cronjob / konsol kommandoer, gerne med input så vi kan debugge specifikke kunder/ordre
-
-Det ønskes af HeyLoyalty at kunne importere en kundens ordre op til 2 år tilbage i tiden.
-Magento holder selv styr på ordre per kunde, selvom de opretter en gæstebruger
-
-Mit forslag:
-
-Funktion til liste af ordre der skal importeres ( stoooor liste af id'er )
-pseudo query: `select order.order_id from customers as customer left join orders as order on order.customer_id = customer.customer_id where order.is_exported_to_heyloyalty_flag != 1`
-
-# Transactional Emails:
-
-Overskriv Default Magento emails med mulighed for at slå HeyLoyalte mails i stedet.
-Dette kan gøres via api kald til Heyloyalty ( webhooks )
-
-
-
-
-# Product Feed?
-
-
+This again means that if the client uses a different theme which removes this dependency then they will have to implement the add_to_cart event themselves.

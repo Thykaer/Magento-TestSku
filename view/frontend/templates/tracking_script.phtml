@@ -117,7 +117,7 @@
             let cart = customerData.get('cart');
             let init = true;
             let initialCartData = [];
-            cart.subscribe(function(test) {
+            cart.subscribe(function() {
                 if (init) {
                     initialCartData = cart().items.map(item => {
                         return {
