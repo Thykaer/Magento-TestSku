@@ -1,6 +1,25 @@
 
 # HeyLoyalty Module
 
+## Setup
+
+There are two ways to install the HeyLoyalty module:
+
+- (Recommended) Type the command `composer require wexo/module-heyloyalty` from the magento installation root directory
+- (Not recommended) Copy the module content to the directory app/code located in the magento installation root directory
+
+After this, all you have to do is run the command `php bin/magento setup:upgrade`, and the module is installed and ready to use.
+
+The module has a few dependencies on internal magento modules:
+```xml
+<sequence>
+    <module name="Magento_Newsletter"/>
+    <module name="Magento_Customer"/>
+    <module name="Magento_Store"/>
+</sequence>
+```
+These are all required by magento by default
+
 ## Settings
 
 #### General Settings
@@ -19,20 +38,6 @@ If you want to verify the data before you send it, you can click the first link 
 
 
 ## Developer Guide:
-
-### Setup
-
-`php bin/magento setup:upgrade` is all that is required to install the module.
-
-The module has a few dependencies on internal magento modules:
-```xml
-<sequence>
-    <module name="Magento_Newsletter"/>
-    <module name="Magento_Customer"/>
-    <module name="Magento_Store"/>
-</sequence>
-```
-These are all required by magento by default
 
 ### API, Client & Config
 
