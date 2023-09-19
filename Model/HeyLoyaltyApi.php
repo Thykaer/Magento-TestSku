@@ -67,7 +67,7 @@ class HeyLoyaltyApi implements HeyLoyaltyApiInterface
 
     public function generatePurchaseHistorySecurityKey(): string
     {
-        return md5("HEYLOYALTY_" . date("Y-m-d"));
+        return hash('md5', "HEYLOYALTY_" . date("Y-m-d"));
     }
 
 
