@@ -1,6 +1,6 @@
 <?php
 
-namespace Wexo\Heyloyalty\Plugin\Model;
+namespace Wexo\HeyLoyalty\Plugin\Model;
 
 class SubscriptionManager
 {
