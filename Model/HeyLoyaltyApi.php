@@ -2,7 +2,6 @@
 
 namespace Wexo\HeyLoyalty\Model;
 
-use Magento\Framework\Exception\NoSuchEntityException;
 use Wexo\HeyLoyalty\Api\HeyLoyaltyApiInterface;
 use Wexo\HeyLoyalty\Api\HeyLoyaltyClientInterface;
 use Wexo\HeyLoyalty\Api\HeyLoyaltyConfigInterface;
@@ -43,8 +42,8 @@ class HeyLoyaltyApi implements HeyLoyaltyApiInterface
     }
 
     public function exportPurchaseHistory(
-        $csvUrl,
-        $fields = [
+        string $csvUrl,
+        array $fields = [
             'email',
             'product_id',
             // 'variation_type',
@@ -59,7 +58,7 @@ class HeyLoyaltyApi implements HeyLoyaltyApiInterface
             'event_type',
             'amount'
         ]
-    ) {
+    ): array {
         $trackingId = $this->config->getTrackingId();
         $errorEmail = $this->config->getPurchaseHistoryErrorEmail();
         return $this->client->exportPurchaseHistory($csvUrl, $trackingId, $fields, $errorEmail);
@@ -71,7 +70,7 @@ class HeyLoyaltyApi implements HeyLoyaltyApiInterface
     }
 
 
-    public function generatePurchaseHistory($storeId)
+    public function generatePurchaseHistory(mixed $storeId): string
     {
         $cacheKey = "heyloyalty_purchase_history_{$storeId}";
         $cacheData = $this->cache->load($cacheKey);
