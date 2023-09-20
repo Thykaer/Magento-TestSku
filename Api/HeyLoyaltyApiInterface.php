@@ -1,13 +1,19 @@
-<?php namespace Wexo\HeyLoyalty\Api;
+<?php
+
+namespace Wexo\HeyLoyalty\Api;
 
 interface HeyLoyaltyApiInterface
 {
     /**
+     * Get is enabled
+     *
      * @return bool
      */
     public function isEnabled(): bool;
 
     /**
+     * Get all lists
+     *
      * @return array
      */
     public function getLists(): array;
@@ -34,8 +40,27 @@ interface HeyLoyaltyApiInterface
      */
     public function getTrackingId(): string;
 
-    public function exportPurchaseHistory($csvUrl);
-    public function generatePurchaseHistory($storeId);
+    /**
+     * Export purchase history
+     *
+     * @param string $csvUrl
+     * @return array
+     */
+    public function exportPurchaseHistory(string $csvUrl): array;
+
+    /**
+     * Generate purchase history
+     *
+     * @param int|string $storeId
+     * @return string
+     */
+    public function generatePurchaseHistory(mixed $storeId): string;
+
+    /**
+     * Generate purchase history security key
+     *
+     * @return string
+     */
     public function generatePurchaseHistorySecurityKey(): string;
 
 
@@ -48,5 +73,12 @@ interface HeyLoyaltyApiInterface
      */
     public function createListMember(string $listId, array $fields = []): array;
 
+    /**
+     * Delete list member by email
+     *
+     * @param string $listId
+     * @param string $email
+     * @return array
+     */
     public function deleteListMemberByEmail(string $listId, string $email): array;
 }

@@ -2,8 +2,6 @@
 
 namespace Wexo\HeyLoyalty\Api;
 
-use Magento\Framework\Exception\NoSuchEntityException;
-
 interface HeyLoyaltyClientInterface
 {
     /**
@@ -304,7 +302,7 @@ interface HeyLoyaltyClientInterface
 
     /**
      * Export purchase history to HeyLoyalty, input is a CSV
-     * @param string $csv
+     * @param string $csvUrl
      * @param string $trackingId
      * @param array $fields
      * @param string $sendErrorsTo

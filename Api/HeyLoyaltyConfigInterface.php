@@ -49,10 +49,10 @@ interface HeyLoyaltyConfigInterface
     /**
      * Get HeyLoyalty field mapping and map them to customer data
      *
-     * @param $customer
+     * @param \Magento\Customer\Api\Data\CustomerInterface|null $customer
      * @return array
      */
-    public function mapFields($customer = null): array;
+    public function mapFields(\Magento\Customer\Api\Data\CustomerInterface $customer = null): array;
 
     /**
      * Get HeyLoyalty tracking id
@@ -68,6 +68,17 @@ interface HeyLoyaltyConfigInterface
      */
     public function getSessionTime(): string;
 
+    /**
+     * Get if purchase history is activated
+     *
+     * @return bool
+     */
     public function getIsPurchaseHistoryActivated(): bool;
+
+    /**
+     * Get purchase history error email
+     *
+     * @return string
+     */
     public function getPurchaseHistoryErrorEmail(): string;
 }

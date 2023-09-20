@@ -3,6 +3,7 @@
 namespace Wexo\HeyLoyalty\Model;
 
 use InvalidArgumentException;
+use Magento\Customer\Api\Data\CustomerInterface;
 use Wexo\HeyLoyalty\Api\HeyLoyaltyConfigInterface;
 
 class HeyLoyaltyConfig implements HeyLoyaltyConfigInterface
@@ -80,7 +81,7 @@ class HeyLoyaltyConfig implements HeyLoyaltyConfigInterface
         }
     }
 
-    public function mapFields($customer = null): array
+    public function mapFields(CustomerInterface $customer = null): array
     {
         if (!$customer) {
             return [];
