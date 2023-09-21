@@ -1,5 +1,5 @@
 {
-    "name": "wexo/module-heyloyalty",
+    "name": "heyloyalty/magento2-module",
     "description": "Module for https://heyloyalty.com/",
     "type": "magento2-module",
     "license": [
