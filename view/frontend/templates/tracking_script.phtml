@@ -39,7 +39,7 @@
     <!-- hlt.visit(productid, categoryid, categoryname)/()/(,,categoryname) -->
     <script>
         function hltVisit() {
-            let productId = <?= $product?->getId() ?? 'null' ?>;
+            let productId = <?= $product?->getSku() ?? 'null' ?>;
             let categoryId = <?= $category?->getId() ?? 'null' ?>;
             let categoryName = "<?= $category?->getName() ?? null ?>";
             console.debug('HeyLoyalty :: HIT', {
