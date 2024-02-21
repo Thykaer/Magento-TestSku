@@ -1,7 +1,7 @@
 {
     "name": "thykaer/magento-testsku",
     "description": "Module for https://heyloyalty.com/",
-    "type": "magento2-module",
+    "type": "magento-testsku",
     "version": "1.0.0",
     "license": [
       "MIT"
